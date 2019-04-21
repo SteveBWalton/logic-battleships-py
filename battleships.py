@@ -427,7 +427,7 @@ def GetGame(index, oArgs):
         # oGame.negative_mask[2] = 1 + 2 + 8 + 16 + 32 + 128
         # oGame.mask[3] = 64
         # oGame.mask[4] = 2 + 64 + 256 + 512
-        # oGame.solve_game = False
+        oGame.solve_game = True
     elif index == 24:
         oGame = CBattleships(8, 5, 'Logic Problems Battleships Number 24', oArgs)
 
@@ -458,7 +458,7 @@ def GetGame(index, oArgs):
         # oGame.mask[5] = 2+4+8+16+32+128
 
         # oGame.mask[7] = 1+4+16+64+128
-        oGame.solve_game = False
+        oGame.solve_game = True
     elif index == 26:
         oGame = CBattleships(8, 5, 'Logic Problems Battleships Number 26', oArgs)
 
@@ -490,7 +490,7 @@ def GetGame(index, oArgs):
         oGame.mask[2] = 128
         oGame.negative_mask[3] = 64
         oGame.mask[4] = 128
-        oGame.solve_game = False
+        oGame.solve_game = True
     else:
         oGame = CBattleships(8, 5, 'Logic Problems Battleships Number 27', oArgs)
 
@@ -517,7 +517,7 @@ def GetGame(index, oArgs):
         oGame.mask[6] = 128
         oGame.negative_mask[6] = 64
         oGame.negative_mask[7] = 64
-        # oGame.solve_game = False
+        oGame.solve_game = True
 
     return oGame
 
@@ -528,39 +528,98 @@ if __name__ == '__main__':
     # Process the command line arguments.
     # This might end the program (--help).
     oParse = argparse.ArgumentParser(prog='battleships', description='Solver for Battleships.')
+    oParse.add_argument('-g', '--game', help='The index of the game to solve.', action='store')
     oParse.add_argument('-s', '--start', help='The starting percentage.', action='store')
     oParse.add_argument('-f', '--finish', help='The finish percentage.', action='store')
     oParse.add_argument('-i', '--indent', help='The indent for the progress percentage.', action='store')
     oParse.add_argument('-t', '--threads', help='Split the program into threads.', action='store')
     oArgs = oParse.parse_args()
 
-    oGame = GetGame(27, oArgs)
-    oGame.Solve()
+    # Indentify the game to solve.
+    bShowGame = False
+    nGame = 0
+    if oArgs.game != None:
+        try:
+            nGame = int(oArgs.game)
+        except:
+            pass
+    while nGame == 0:
+        bShowGame = True
+        print('Please enter the game number.')
+        nGame = input()
+        try:
+            nGame = int(nGame)
+        except:
+            print('I do not understand')
+            nGame = 0
+    # print('Game = {}'.format(nGame))
+
+    oGame = GetGame(nGame, oArgs)
+
+    if oArgs.threads == None:
+        bShowGame = True
+
+    if bShowGame:
+        print(oGame.label)
+        print(u"\u250F", end='')
+        for Y in range(0, oGame.grid):
+            print(u"\u2501", end='')
+        print(u"\u2513")
+        for X in range(0, oGame.grid):
+            print(u"\u2503", end='')
+            for Y in range(0, oGame.grid):
+                nMask = 2 ** Y
+                if oGame.mask[X] & nMask == nMask:
+                    print(u"\u2588", end='')
+                elif oGame.negative_mask[X] & nMask == nMask:
+                    print(u"\u00B7", end='')
+                else:
+                    print(' ', end='')
+            print(u"\u2503", end='')
+            print('{} {} {}'.format(oGame.horizontal[X], oGame.mask[X], oGame.negative_mask[X]))
+
+        print(u"\u2517", end='')
+        for Y in range(0, oGame.grid):
+            print(u"\u2501", end='')
+        print(u"\u251B")
+
+        print(' ', end='')
+        for nRow in range(0, oGame.grid):
+            print('{}'.format(oGame.vertical[nRow]), end='')
+        print()
 
     if oArgs.threads != None:
-        import subprocess
-        import time
-        nSplit = int(oArgs.threads)
-        if nSplit > 10:
-            nSplit = 10
-        elif nSplit < 2:
-            nSplit = 2
+        nThreads = int(oArgs.threads)
+        if nThreads <= 1:
+            # print('oArgs.threads = {}.'.format(nThreads))
+            # Solve the specified game.
+            oGame.Solve()
+            pass
+        else:
+            # print('oArgs.threads = {}.'.format(nThreads))
+            import subprocess
+            import time
+            nSplit = nThreads
+            if nSplit > 10:
+                nSplit = 10
+            elif nSplit < 2:
+                nSplit = 2
 
-        nAmount = int(100 / nSplit)
-        nStart = 0
-        nIndent = 2
-        Threads = []
-        for nIndex in range(0, nSplit-1):
-            # print('Thread --start={} --finish={} --indent={}'.format(nStart, nStart+nAmount, nIndent))
-            Threads.append(subprocess.Popen([__file__, '--start', '{}'.format(nStart), '--finish', '{}'.format(nStart+nAmount), '--indent', '{}'.format(nIndent)]))
-            nStart = nStart+nAmount
-            nIndent = nIndent+8
-        # print('Thread --start={} --ident={}'.format(nStart, nIndent))
-        Threads.append(subprocess.Popen([__file__, '--start', '{}'.format(nStart), '--indent', '{}'.format(nIndent)]))
+            nAmount = int(100 / nSplit)
+            nStart = 0
+            nIndent = 2
+            Threads = []
+            for nIndex in range(0, nSplit-1):
+                # print('Thread --game={} --start={} --finish={} --indent={} --threads={}'.format(nGame, nStart, nStart+nAmount, nIndent, 1))
+                Threads.append(subprocess.Popen([__file__, '--game', '{}'.format(nGame) , '--start', '{}'.format(nStart), '--finish', '{}'.format(nStart+nAmount), '--indent', '{}'.format(nIndent), '--threads', '1']))
+                nStart = nStart + nAmount
+                nIndent = nIndent + 8
+            # print('Thread --game={} --start={} --indent={} --threads={}'.format(nGame, nStart, nIndent, 1))
+            Threads.append(subprocess.Popen([__file__, '--game', '{}'.format(nGame), '--start', '{}'.format(nStart), '--indent', '{}'.format(nIndent), '--threads', '1']))
 
-        while AnyThreadRunning(Threads):
-            time.sleep(10)
-        print('\033[KFinished.')
+            while AnyThreadRunning(Threads):
+                time.sleep(10)
+            print('\033[KFinished.')
 
         # Exit this script.
         # quit()
