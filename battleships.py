@@ -306,7 +306,7 @@ class CBattleships():
                             self.Print()
                     self.count = self.count + 1
                     if self.count % 100000 == 0:
-                        print('\033[{}C{:.2f}%'.format(self.indent, percentage), end='\r', flush=True)
+                        print('\033[{}C{:.3f}%'.format(self.indent, percentage), end='\r', flush=True)
 
                 else:
                     self.Search(nLevel+1)
@@ -516,6 +516,7 @@ def GetGame(index, oArgs):
         oGame.negative_mask[4] = 64 + 128
         oGame.mask[5] = 128
         oGame.negative_mask[5] = 64
+        oGame.negative_mask[6] = 64
 
         #oGame.mask[0] = 4 + 8 + 16 + 32
         #oGame.negative_mask[0] = 1 + 2
