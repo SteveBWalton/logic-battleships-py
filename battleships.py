@@ -273,6 +273,7 @@ class CBattleships():
                         print('Touching at ({},{}) and ({},{})'.format(X, Y, X+1, Y+1))
 
 
+
     def GetNumPossible(self, nLevel):
         nAnswer = 1
         for index in range(nLevel, self.grid):
@@ -314,7 +315,7 @@ class CBattleships():
 
     def ShowInitialPosition(self):
         ''' Returns true if the inital position should be shown. '''
-        if self.start_search == 0 and self.finish_search == 100:
+        if self.start_search == 0: # and self.finish_search == 100:
             return True
         return False
 
@@ -370,8 +371,9 @@ class CBattleships():
 
         if nTotalShipsHorizontal == nTotalShipsVertical:
             self.total_ships = nTotalShipsHorizontal
-            if self.solve_game:
-                self.Search(0)
+            if self.number > 0:
+                if self.solve_game:
+                    self.Search(0)
             # print('Search Space  {:,}'.format(self.number))
             # print('Actual Search {:,}'.format(self.count))
         else:
@@ -514,9 +516,24 @@ def GetGame(index, oArgs):
         oGame.negative_mask[4] = 64 + 128
         oGame.mask[5] = 128
         oGame.negative_mask[5] = 64
-        oGame.mask[6] = 128
-        oGame.negative_mask[6] = 64
-        oGame.negative_mask[7] = 64
+
+        #oGame.mask[0] = 4 + 8 + 16 + 32
+        #oGame.negative_mask[0] = 1 + 2
+        #oGame.mask[1] = 1
+        #oGame.negative_mask[1] = 2 + 4 + 8 + 16 + 32 + 64 + 128
+        #oGame.mask[2] = 8 + 32 + 64 +128
+        #oGame.negative_mask[2] = 4 + 16
+        #oGame.mask[3] = 8
+        #oGame.negative_mask[3] = 4 + 16 + 32 + 64 + 128
+        #oGame.mask[4] = 8
+        #oGame.negative_mask[4] = 4 + 16 + 64 + 128
+        #oGame.mask[5] = 8 + 128
+        #oGame.negative_mask[5] = 4 + 32 + 64
+        #oGame.mask[6] = 128
+        #oGame.negative_mask[6] = 4 + 8 + 16 + 32 + 64
+        #oGame.mask[7] = 8 + 16
+        #oGame.negative_mask[7] = 4 + 64
+
         oGame.solve_game = True
 
     return oGame
