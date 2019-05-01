@@ -13,14 +13,33 @@ import datetime
 
 
 
+def Write(sText : str):
+    ''' Write the text to the output without a linefeed. '''
+    print(sText, end='')
+    oFile = open('results.txt', 'a')
+    oFile.write(sText)
+    oFile.close()
+
+
+
+def WriteLine(sText: str):
+    ''' Write the text to the output and add a linefeed. '''
+    print(sText)
+    oFile = open('results.txt', 'a')
+    oFile.write(sText)
+    oFile.write("\n")
+    oFile.close()
+
+
+
 def DisplayLine(nNumPositions, nLine):
     ''' Function to display a horizontal line in a Battleship problem '''
     nMask = 1
     for nPos in range(0, nNumPositions):
         if nLine & nMask == nMask:
-            print(u"\u2588", end='')
+            Write(u"\u2588")
         else:
-            print(u"\u00B7", end='')
+            Write(u"\u00B7")
         nMask *= 2
 
 
@@ -176,33 +195,33 @@ class CBattleships():
         Ships = self.GetShips()
 
         # Display the game position.
-        print(u"\u250F", end='')
+        Write(u"\u250F")
         for Y in range(0, self.grid):
-            print(u"\u2501", end='')
-        print(u"\u2513")
+            Write(u"\u2501")
+        WriteLine(u"\u2513")
         for nRow in range(0, self.grid):
-            print(u"\u2503", end='')
+            Write(u"\u2503")
             DisplayLine(self.grid, self.line[nRow])
-            print(u"\u2503", end='')
-            print(self.horizontal[nRow], end='')
+            Write(u"\u2503")
+            Write('{}'.format(self.horizontal[nRow]))
 
             if nRow <= self.max_ship and nRow >= 1:
-                print('  {} x {} '.format(Ships[nRow], nRow), end='')
+                Write('  {} x {} '.format(Ships[nRow], nRow))
                 for nSize in range(0, nRow):
-                    print(u"\u2588", end='')
-            print()
+                    Write(u"\u2588")
+            WriteLine('')
 
             # print(self.horizontal[nRow], end='')
             # print('{}, {}'.format(self.line[nRow], self.VerticalLine(nRow)))
-        print(u"\u2517", end='')
+        Write(u"\u2517")
         for Y in range(0, self.grid):
-            print(u"\u2501", end='')
-        print(u"\u251B")
+            Write(u"\u2501")
+        WriteLine(u"\u251B")
 
-        print(' ', end='')
+        Write(' ')
         for nRow in range(0, self.grid):
-            print(self.vertical[nRow], end='')
-        print()
+            Write('{}'.format(self.vertical[nRow]))
+        WriteLine('')
 
         #for X in range(0, self.grid):
         #    for Y in range(0, self.grid):
@@ -302,7 +321,7 @@ class CBattleships():
                 if nLevel == self.grid-1:
                     if percentage >= self.start_search: # and percentage <= self.finish_search:
                         if self.IsValidSolution():
-                            print('\033[K{}'.format(datetime.datetime.now()))
+                            WriteLine('\033[K{}'.format(datetime.datetime.now()))
                             self.Print()
                     self.count = self.count + 1
                     if self.count % 100000 == 0:
@@ -329,45 +348,45 @@ class CBattleships():
         nTotalShipsHorizontal = 0
         nTotalShipsVertical = 0
         if self.ShowInitialPosition():
-            print(self.label)
-            print(u"\u250F", end='')
+            WriteLine(self.label)
+            Write(u"\u250F")
             for Y in range(0, self.grid):
-                print(u"\u2501", end='')
-            print(u"\u2513")
+                Write(u"\u2501")
+            WriteLine(u"\u2513")
         for X in range(0, self.grid):
             if self.ShowInitialPosition():
-                print(u"\u2503", end='')
+                Write(u"\u2503")
                 for Y in range(0, self.grid):
                     nMask = 2 ** Y
                     if self.mask[X] & nMask == nMask:
-                        print(u"\u2588", end='')
+                        Write(u"\u2588")
                     elif self.negative_mask[X] & nMask == nMask:
-                        print(u"\u00B7", end='')
+                        Write(u"\u00B7")
                     else:
-                        print(' ', end='')
-                print(u"\u2503", end='')
+                        Write(' ')
+                Write(u"\u2503")
             # print('{} {} {}'.format(self.horizontal[X], self.mask[X], self.negative_mask[X]))
             PossibleLines = GetPossibleLines(self.grid, self.horizontal[X], self.max_ship, self.mask[X], self.negative_mask[X])
             self.posibilities.append(PossibleLines)
             self.number = self.number * len(PossibleLines)
             if self.ShowInitialPosition():
-                print('{}  There are {} possible solutions.'.format(self.horizontal[X], len(PossibleLines)))
+                WriteLine('{}  There are {} possible solutions.'.format(self.horizontal[X], len(PossibleLines)))
 
             nTotalShipsHorizontal = nTotalShipsHorizontal + self.horizontal[X]
             nTotalShipsVertical = nTotalShipsVertical + self.vertical[X]
 
         if self.ShowInitialPosition():
-            print(u"\u2517", end='')
+            Write(u"\u2517")
             for Y in range(0, self.grid):
-                print(u"\u2501", end='')
-            print(u"\u251B")
+                Write(u"\u2501")
+            WriteLine(u"\u251B")
 
-            print(' ', end='')
+            Write(' ')
             for nRow in range(0, self.grid):
-                print('{}'.format(self.vertical[nRow]), end='')
-            print()
+                Write('{}'.format(self.vertical[nRow]))
+            WriteLine('')
 
-            print('Search space is {:,}'.format(self.number))
+            WriteLine('Search space is {:,}'.format(self.number))
 
         if nTotalShipsHorizontal == nTotalShipsVertical:
             self.total_ships = nTotalShipsHorizontal
@@ -425,10 +444,11 @@ def GetGame(index, oArgs):
         oGame.mask[4] = 2
         oGame.mask[7] = 16
 
-        # oGame.mask[0] = 2 ** 8
-        # oGame.negative_mask[2] = 1 + 2 + 8 + 16 + 32 + 128
-        # oGame.mask[3] = 64
-        # oGame.mask[4] = 2 + 64 + 256 + 512
+        oGame.mask[0] = 2 ** 8
+        oGame.negative_mask[2] = 1 + 2 + 8 + 16 + 32 + 128
+        oGame.mask[3] = 64
+        oGame.mask[4] = 2 + 64 + 256 + 512
+
         oGame.solve_game = True
     elif index == 24:
         oGame = CBattleships(8, 5, 'Logic Problems Battleships Number 24', oArgs)
@@ -553,6 +573,16 @@ if __name__ == '__main__':
     oParse.add_argument('-t', '--threads', help='Split the program into threads.', action='store')
     oArgs = oParse.parse_args()
 
+    # Reset the output file.
+    if oArgs.threads == None:
+        oFile = open('results.txt', 'w')
+        oFile.close()
+    else:
+        nThreads = int(oArgs.threads)
+        if nThreads > 1:
+            oFile = open('results.txt', 'w')
+            oFile.close()
+
     # Indentify the game to solve.
     bShowGame = False
     nGame = 0
@@ -578,33 +608,33 @@ if __name__ == '__main__':
         bShowGame = True
 
     if bShowGame:
-        print(oGame.label)
-        print(u"\u250F", end='')
+        WriteLine(oGame.label)
+        Write(u"\u250F")
         for Y in range(0, oGame.grid):
-            print(u"\u2501", end='')
-        print(u"\u2513")
+            Write(u"\u2501")
+        WriteLine(u"\u2513")
         for X in range(0, oGame.grid):
-            print(u"\u2503", end='')
+            Write(u"\u2503")
             for Y in range(0, oGame.grid):
                 nMask = 2 ** Y
                 if oGame.mask[X] & nMask == nMask:
-                    print(u"\u2588", end='')
+                    Write(u"\u2588")
                 elif oGame.negative_mask[X] & nMask == nMask:
-                    print(u"\u00B7", end='')
+                    Write(u"\u00B7")
                 else:
-                    print(' ', end='')
-            print(u"\u2503", end='')
-            print('{} {} {}'.format(oGame.horizontal[X], oGame.mask[X], oGame.negative_mask[X]))
+                    Write(' ')
+            Write(u"\u2503")
+            WriteLine('{} {} {}'.format(oGame.horizontal[X], oGame.mask[X], oGame.negative_mask[X]))
 
-        print(u"\u2517", end='')
+        Write(u"\u2517")
         for Y in range(0, oGame.grid):
-            print(u"\u2501", end='')
-        print(u"\u251B")
+            Write(u"\u2501")
+        WriteLine(u"\u251B")
 
-        print(' ', end='')
+        Write(' ')
         for nRow in range(0, oGame.grid):
-            print('{}'.format(oGame.vertical[nRow]), end='')
-        print()
+            Write('{}'.format(oGame.vertical[nRow]))
+        WriteLine('')
 
     if oArgs.threads != None:
         nThreads = int(oArgs.threads)
