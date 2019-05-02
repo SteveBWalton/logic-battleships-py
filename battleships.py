@@ -326,7 +326,6 @@ class CBattleships():
                     self.count = self.count + 1
                     if self.count % 100000 == 0:
                         print('\033[{}C{:.3f}%'.format(self.indent, percentage), end='\r', flush=True)
-
                 else:
                     self.Search(nLevel+1)
 
@@ -393,6 +392,7 @@ class CBattleships():
             if self.number > 0:
                 if self.solve_game:
                     self.Search(0)
+                    print('\033[{}C-------'.format(self.indent), end='\r', flush=True)
             # print('Search Space  {:,}'.format(self.number))
             # print('Actual Search {:,}'.format(self.count))
         else:
