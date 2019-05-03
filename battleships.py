@@ -370,7 +370,7 @@ class CBattleships():
             self.posibilities.append(PossibleLines)
             self.number = self.number * len(PossibleLines)
             if self.ShowInitialPosition():
-                WriteLine('{}  There are {} possible solutions.'.format(self.horizontal[X], len(PossibleLines)))
+                WriteLine('{}    There are {} possible lines.'.format(self.horizontal[X], len(PossibleLines)))
 
             nTotalShipsHorizontal = nTotalShipsHorizontal + self.horizontal[X]
             nTotalShipsVertical = nTotalShipsVertical + self.vertical[X]
