@@ -705,7 +705,7 @@ if __name__ == '__main__':
                 else:
                     Write(' ')
             Write(u"\u2503")
-            WriteLine('{} {} {}'.format(oGame.horizontal[X], oGame.mask[X], oGame.negative_mask[X]))
+            WriteLine('{}     {:4n} {:4n}    There are {} possible lines.'.format(oGame.horizontal[X], oGame.mask[X], oGame.negative_mask[X], len(PossibleLines)))
 
         Write(u"\u2517")
         for Y in range(0, oGame.grid):
