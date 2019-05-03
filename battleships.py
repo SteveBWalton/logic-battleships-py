@@ -324,8 +324,9 @@ class CBattleships():
                             WriteLine('\033[K{}'.format(datetime.datetime.now()))
                             self.Print()
                     self.count = self.count + 1
+                    # Display the progress on this thread.
                     if self.count % 100000 == 0:
-                        print('\033[{}C{:.3f}%'.format(self.indent, percentage), end='\r', flush=True)
+                        print('\033[{}C{:.3f}'.format(self.indent, percentage), end='\r', flush=True)
                 else:
                     self.Search(nLevel+1)
 
@@ -392,7 +393,7 @@ class CBattleships():
             if self.number > 0:
                 if self.solve_game:
                     self.Search(0)
-                    print('\033[{}C-------'.format(self.indent), end='\r', flush=True)
+                    print('\033[{}C------'.format(self.indent), end='\r', flush=True)
             # print('Search Space  {:,}'.format(self.number))
             # print('Actual Search {:,}'.format(self.count))
         else:
@@ -730,8 +731,8 @@ if __name__ == '__main__':
             import subprocess
             import time
             nSplit = nThreads
-            if nSplit > 10:
-                nSplit = 10
+            if nSplit > 20:
+                nSplit = 20
             elif nSplit < 2:
                 nSplit = 2
 
@@ -743,7 +744,7 @@ if __name__ == '__main__':
                 # print('Thread --game={} --start={} --finish={} --indent={} --threads={}'.format(nGame, nStart, nStart+nAmount, nIndent, 1))
                 Threads.append(subprocess.Popen([__file__, '--game', '{}'.format(nGame) , '--start', '{}'.format(nStart), '--finish', '{}'.format(nStart+nAmount), '--indent', '{}'.format(nIndent), '--threads', '1']))
                 nStart = nStart + nAmount
-                nIndent = nIndent + 8
+                nIndent = nIndent + 7
             # print('Thread --game={} --start={} --indent={} --threads={}'.format(nGame, nStart, nIndent, 1))
             Threads.append(subprocess.Popen([__file__, '--game', '{}'.format(nGame), '--start', '{}'.format(nStart), '--indent', '{}'.format(nIndent), '--threads', '1']))
 
