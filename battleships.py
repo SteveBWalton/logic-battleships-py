@@ -492,6 +492,40 @@ def GetGame(index, oArgs):
         oGame.negative_mask[9] = 2
 
         oGame.solve_game = True
+    elif index == 3:
+        oGame = CBattleships(10, 4, 'Logic Problems Battleships Number 3', oArgs)
+
+        oGame.horizontal[0] = 4
+        oGame.horizontal[1] = 0
+        oGame.horizontal[2] = 3
+        oGame.horizontal[3] = 5
+        oGame.horizontal[4] = 2
+        oGame.horizontal[5] = 0
+        oGame.horizontal[6] = 0
+        oGame.horizontal[7] = 2
+        oGame.horizontal[8] = 2
+        oGame.horizontal[9] = 2
+        oGame.vertical[0] = 3
+        oGame.vertical[1] = 0
+        oGame.vertical[2] = 1
+        oGame.vertical[3] = 4
+        oGame.vertical[4] = 1
+        oGame.vertical[5] = 6
+        oGame.vertical[6] = 0
+        oGame.vertical[7] = 3
+        oGame.vertical[8] = 0
+        oGame.vertical[9] = 2
+
+        oGame.mask[7] = 128
+        oGame.mask[8] = 1
+        oGame.mask[9] = 512
+
+        oGame.negative_mask[6] = 64 + 128 + 256
+        oGame.negative_mask[7] = 64 + 256
+        oGame.negative_mask[8] = 2 + 64 + 128 + 256 + 512
+        oGame.negative_mask[9] = 1 + 2 + 256
+
+        oGame.solve_game = True
     elif index == 24:
         oGame = CBattleships(8, 5, 'Logic Problems Battleships Number 24', oArgs)
 
@@ -655,7 +689,11 @@ if __name__ == '__main__':
         for Y in range(0, oGame.grid):
             Write(u"\u2501")
         WriteLine(u"\u2513")
+        nNumber = 1
         for X in range(0, oGame.grid):
+            PossibleLines = GetPossibleLines(oGame.grid, oGame.horizontal[X], oGame.max_ship, oGame.mask[X], oGame.negative_mask[X])
+            nNumber = nNumber * len(PossibleLines)
+
             Write(u"\u2503")
             for Y in range(0, oGame.grid):
                 nMask = 2 ** Y
@@ -677,6 +715,8 @@ if __name__ == '__main__':
         for nRow in range(0, oGame.grid):
             Write('{}'.format(oGame.vertical[nRow]))
         WriteLine('')
+
+        WriteLine('Search space is {:,}'.format(nNumber))
 
     if oArgs.threads != None:
         nThreads = int(oArgs.threads)
