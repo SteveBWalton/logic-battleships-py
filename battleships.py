@@ -522,7 +522,7 @@ def GetGame(index, oArgs):
         oGame.mask[9] = 512
 
         oGame.negative_mask[6] = 64 + 128 + 256
-        oGame.negative_mask[7] = 64 + 256
+        oGame.negative_mask[7] = 2 + 64 + 256
         oGame.negative_mask[8] = 2 + 64 + 128 + 256 + 512
         oGame.negative_mask[9] = 1 + 2 + 256
 
