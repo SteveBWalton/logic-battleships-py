@@ -318,7 +318,7 @@ class CBattleships():
         if percentage <= self.finish_search:
             for Possible in self.posibilities[nLevel]:
                 self.line[nLevel] = Possible
-                if nLevel == self.grid-1:
+                if nLevel == self.grid - 1:
                     if percentage >= self.start_search: # and percentage <= self.finish_search:
                         if self.IsValidSolution():
                             WriteLine('\033[K{}'.format(datetime.datetime.now()))
@@ -405,9 +405,9 @@ class CBattleships():
     def ApplyParameters(self, oArgs):
         ''' Apply the parameters to the game object. '''
         if oArgs.start != None:
-            self.start_search = int(oArgs.start)
+            self.start_search = float(oArgs.start)
         if oArgs.finish != None:
-            self.finish_search = int(oArgs.finish)
+            self.finish_search = float(oArgs.finish)
         if oArgs.indent != None:
             self.indent = int(oArgs.indent)
         if oArgs.threads != None:
@@ -736,17 +736,21 @@ if __name__ == '__main__':
             elif nSplit < 2:
                 nSplit = 2
 
-            nAmount = int(100 / nSplit)
-            nStart = 0
+            fAmount = float((oGame.finish_search - oGame.start_search) / nSplit)
+            fStart = oGame.start_search
             nIndent = 2
             Threads = []
             for nIndex in range(0, nSplit-1):
-                # print('Thread --game={} --start={} --finish={} --indent={} --threads={}'.format(nGame, nStart, nStart+nAmount, nIndent, 1))
-                Threads.append(subprocess.Popen([__file__, '--game', '{}'.format(nGame) , '--start', '{}'.format(nStart), '--finish', '{}'.format(nStart+nAmount), '--indent', '{}'.format(nIndent), '--threads', '1']))
-                nStart = nStart + nAmount
+                print('Thread --game={} --start={} --finish={} --indent={} --threads={}'.format(nGame, fStart, fStart + fAmount, nIndent, 1))
+                Threads.append(subprocess.Popen([__file__, '--game', '{}'.format(nGame) , '--start', '{}'.format(fStart), '--finish', '{}'.format(fStart + fAmount), '--indent', '{}'.format(nIndent), '--threads', '1']))
+                fStart = fStart + fAmount
                 nIndent = nIndent + 7
-            # print('Thread --game={} --start={} --indent={} --threads={}'.format(nGame, nStart, nIndent, 1))
-            Threads.append(subprocess.Popen([__file__, '--game', '{}'.format(nGame), '--start', '{}'.format(nStart), '--indent', '{}'.format(nIndent), '--threads', '1']))
+            if oGame.finish_search >= 100:
+                print('Thread --game={} --start={} --indent={} --threads={}'.format(nGame, fStart, nIndent, 1))
+                Threads.append(subprocess.Popen([__file__, '--game', '{}'.format(nGame), '--start', '{}'.format(fStart), '--indent', '{}'.format(nIndent), '--threads', '1']))
+            else:
+                print('Thread --game={} --start={} --finish={} --indent={} --threads={}'.format(nGame, fStart, oGame.finish_search, nIndent, 1))
+                Threads.append(subprocess.Popen([__file__, '--game', '{}'.format(nGame), '--start', '{}'.format(fStart), '--finish', '{}'.format(oGame.finish_search), '--indent', '{}'.format(nIndent), '--threads', '1']))
 
             while AnyThreadRunning(Threads):
                 time.sleep(10)
