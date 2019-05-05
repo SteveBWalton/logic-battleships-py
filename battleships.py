@@ -10,6 +10,7 @@ import sys
 import os
 import argparse
 import datetime
+import time
 
 
 
@@ -648,6 +649,8 @@ if __name__ == '__main__':
     oParse.add_argument('-f', '--finish', help='The finish percentage.', action='store')
     oParse.add_argument('-i', '--indent', help='The indent for the progress percentage.', action='store')
     oParse.add_argument('-t', '--threads', help='Split the program into threads.', action='store')
+    oParse.add_argument('-v', '--verbose', help='Increase the output level.', action='store_true')
+
     oArgs = oParse.parse_args()
 
     # Reset the output file.
@@ -722,14 +725,15 @@ if __name__ == '__main__':
     if oArgs.threads != None:
         nThreads = int(oArgs.threads)
         if nThreads <= 1:
+            # Give the other threads time to output initial status.
+            time.sleep(1)
+
             # print('oArgs.threads = {}.'.format(nThreads))
             # Solve the specified game.
             oGame.Solve()
-            pass
         else:
             # print('oArgs.threads = {}.'.format(nThreads))
             import subprocess
-            import time
             nSplit = nThreads
             if nSplit > 20:
                 nSplit = 20
@@ -741,15 +745,18 @@ if __name__ == '__main__':
             nIndent = 2
             Threads = []
             for nIndex in range(0, nSplit-1):
-                print('Thread --game={} --start={} --finish={} --indent={} --threads={}'.format(nGame, fStart, fStart + fAmount, nIndent, 1))
+                if oArgs.verbose:
+                    print('Thread({}) --game={} --start={} --finish={} --indent={} --threads={}'.format(nIndex, nGame, fStart, fStart + fAmount, nIndent, 1))
                 Threads.append(subprocess.Popen([__file__, '--game', '{}'.format(nGame) , '--start', '{}'.format(fStart), '--finish', '{}'.format(fStart + fAmount), '--indent', '{}'.format(nIndent), '--threads', '1']))
                 fStart = fStart + fAmount
                 nIndent = nIndent + 7
             if oGame.finish_search >= 100:
-                print('Thread --game={} --start={} --indent={} --threads={}'.format(nGame, fStart, nIndent, 1))
+                if oArgs.verbose:
+                    print('Thread({}) --game={} --start={} --indent={} --threads={}'.format(nSplit-1, nGame, fStart, nIndent, 1))
                 Threads.append(subprocess.Popen([__file__, '--game', '{}'.format(nGame), '--start', '{}'.format(fStart), '--indent', '{}'.format(nIndent), '--threads', '1']))
             else:
-                print('Thread --game={} --start={} --finish={} --indent={} --threads={}'.format(nGame, fStart, oGame.finish_search, nIndent, 1))
+                if oArgs.verbose:
+                    print('Thread({}) --game={} --start={} --finish={} --indent={} --threads={}'.format(nSplit-1, nGame, fStart, oGame.finish_search, nIndent, 1))
                 Threads.append(subprocess.Popen([__file__, '--game', '{}'.format(nGame), '--start', '{}'.format(fStart), '--finish', '{}'.format(oGame.finish_search), '--indent', '{}'.format(nIndent), '--threads', '1']))
 
             while AnyThreadRunning(Threads):
