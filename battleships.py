@@ -331,7 +331,7 @@ class CBattleships():
                     self.count = self.count + 1
                     # Display the progress on this thread.
                     if self.count % 100000 == 0:
-                        print('\033[{}C{:.3f}'.format(self.indent, percentage), end='\r', flush=True)
+                        print('\033[{}C{:>7.3f}'.format(self.indent, percentage), end='\r', flush=True)
                 else:
                     self.Search(nLevel+1)
 
@@ -398,7 +398,7 @@ class CBattleships():
             if self.number > 0:
                 if self.solve_game:
                     self.Search(0)
-                    print('\033[{}C------'.format(self.indent), end='\r', flush=True)
+                    print('\033[{}C ------'.format(self.indent), end='\r', flush=True)
             # print('Search Space  {:,}'.format(self.number))
             # print('Actual Search {:,}'.format(self.count))
         else:
@@ -522,7 +522,7 @@ def Main():
 
             fAmount = float((oGame.finish_search - oGame.start_search) / nSplit)
             fStart = oGame.start_search
-            nIndent = 2
+            nIndent = 1
             Threads = []
             for nIndex in range(0, nSplit-1):
                 if oArgs.verbose:
