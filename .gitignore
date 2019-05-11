@@ -103,5 +103,8 @@ venv.bak/
 # mypy
 .mypy_cache/
 
+# Ignore these file types.
+*.txt
+
 # Ignore these files.
 results.txt
