@@ -372,8 +372,8 @@ class CBattleships():
 
     def ShowInitialPosition(self):
         ''' Returns true if the inital position should be shown. '''
-        if self.start_search == 0: # and self.finish_search == 100:
-            return True
+        # if self.start_search == 0: # and self.finish_search == 100:
+        #    return True
         return False
 
 
@@ -515,6 +515,10 @@ def Main():
 
     oArgs = oParse.parse_args()
 
+    # Display the parameters.
+    if oArgs.verbose:
+        print(sys.argv)
+
     # Reset the output file.
     if oArgs.threads == None:
         oFile = open('results.txt', 'w')
@@ -551,6 +555,10 @@ def Main():
 
     if oArgs.threads == None:
         bShowGame = True
+    else:
+        nThreads = int(oArgs.threads)
+        if nThreads > 1:
+            bShowGame = True
 
     if bShowGame:
         WriteLine(oGame.label)
@@ -611,10 +619,12 @@ def Main():
             Threads = []
             for nIndex in range(0, nSplit-1):
                 if oArgs.verbose:
-                    print('Thread({}) --game {} --start={} --finish={} --indent={} --threads={}'.format(nIndex, nGame, fStart, fStart + fAmount, nIndent, 1))
+                    print('Thread({}) --game={} --start={} --finish={} --indent={} --threads={}'.format(nIndex, nGame, fStart, fStart + fAmount, nIndent, 1))
                 oCommand = [__file__, '--game', '{}'.format(nGame) , '--start', '{}'.format(fStart), '--finish', '{}'.format(fStart + fAmount), '--indent', '{}'.format(nIndent), '--threads', '1']
                 if oGame.transpose:
                     oCommand.append('-p')
+                if oArgs.verbose:
+                    oCommand.append('-v')
                 Threads.append(subprocess.Popen(oCommand))
                 fStart = fStart + fAmount
                 nIndent = nIndent + 7
@@ -624,6 +634,8 @@ def Main():
                 oCommand = [__file__, '--game', '{}'.format(nGame), '--start', '{}'.format(fStart), '--indent', '{}'.format(nIndent), '--threads', '1']
                 if oGame.transpose:
                     oCommand.append('-p')
+                if oArgs.verbose:
+                    oCommand.append('-v')
                 Threads.append(subprocess.Popen(oCommand))
             else:
                 if oArgs.verbose:
@@ -631,6 +643,8 @@ def Main():
                 oCommand = [__file__, '--game', '{}'.format(nGame), '--start', '{}'.format(fStart), '--finish', '{}'.format(oGame.finish_search), '--indent', '{}'.format(nIndent), '--threads', '1']
                 if oGame.transpose:
                     oCommand.append('-p')
+                if oArgs.verbose:
+                    oCommand.append('-v')
                 Threads.append(subprocess.Popen(oCommand))
 
             while AnyThreadRunning(Threads):
