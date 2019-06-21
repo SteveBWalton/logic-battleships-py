@@ -11,6 +11,7 @@ import os
 import argparse
 import datetime
 import time
+import math
 
 # Application libraries.
 import modGetGame
@@ -593,7 +594,7 @@ def Main():
             Write('{}'.format(oGame.vertical[nRow]))
         WriteLine('')
 
-        WriteLine('Search space is {:,}'.format(nNumber))
+        WriteLine('Search space is {:,}.  log = {:0.2f}'.format(nNumber, math.log10(nNumber)))
 
     if oArgs.threads != None:
         nThreads = int(oArgs.threads)
