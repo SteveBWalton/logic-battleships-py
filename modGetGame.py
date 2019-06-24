@@ -389,7 +389,7 @@ def GetGame(index, oArgs):
         oGame.negative_mask[7] = 2
         oGame.negative_mask[8] = 2
 
-    else:
+    elif index == 36:
         oGame = battleships.CBattleships(9, 5, 'Logic Problems Battleships Number 36', oArgs)
         oGame.horizontal[0] = 4
         oGame.horizontal[1] = 1
@@ -421,6 +421,34 @@ def GetGame(index, oArgs):
         oGame.negative_mask[5] = 2 + 8
         oGame.negative_mask[6] = 2 + 4 + 8
 
+    else:
+        oGame = battleships.CBattleships(9, 5, 'Logic Problems Battleships Number 37', oArgs)
+        oGame.horizontal[0] = 3
+        oGame.horizontal[1] = 2
+        oGame.horizontal[2] = 7
+        oGame.horizontal[3] = 1
+        oGame.horizontal[4] = 5
+        oGame.horizontal[5] = 1
+        oGame.horizontal[6] = 2
+        oGame.horizontal[7] = 4
+        oGame.horizontal[8] = 0
+        oGame.vertical[0] = 4
+        oGame.vertical[1] = 1
+        oGame.vertical[2] = 5
+        oGame.vertical[3] = 0
+        oGame.vertical[4] = 4
+        oGame.vertical[5] = 3
+        oGame.vertical[6] = 2
+        oGame.vertical[7] = 4
+        oGame.vertical[8] = 2
+
+        oGame.mask[0] = 16
+        oGame.mask[3] = 4
+
+        oGame.negative_mask[0] = 8 + 32
+        oGame.negative_mask[1] = 8 + 16 + 32
+        oGame.negative_mask[2] = 2 + 8
+        oGame.negative_mask[4] = 2 + 8
 
     oGame.solve_game = True
 
