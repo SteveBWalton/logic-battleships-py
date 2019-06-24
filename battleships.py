@@ -360,7 +360,8 @@ class CBattleships():
                             self.Print()
                     self.count = self.count + 1
                     # Display the progress on this thread.
-                    if self.count % 100000 == 0:
+                    # if self.count % 100000 == 0:
+                    if self.count % 1000000 == 0:
                         # These write an extra space into the next progress box.
                         if self.indent > 0:
                             print('\033[{}C{:>7.3f} '.format(self.indent, percentage), end='\r', flush=True)

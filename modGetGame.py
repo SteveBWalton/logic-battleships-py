@@ -443,12 +443,16 @@ def GetGame(index, oArgs):
         oGame.vertical[8] = 2
 
         oGame.mask[0] = 16
+        oGame.mask[2] = 4
         oGame.mask[3] = 4
+        oGame.mask[4] = 4
 
         oGame.negative_mask[0] = 8 + 32
-        oGame.negative_mask[1] = 8 + 16 + 32
+        oGame.negative_mask[1] = 2 + 8 + 16 + 32
         oGame.negative_mask[2] = 2 + 8
+        oGame.negative_mask[3] = 2 + 8
         oGame.negative_mask[4] = 2 + 8
+        oGame.negative_mask[5] = 2 + 8
 
     oGame.solve_game = True
 
