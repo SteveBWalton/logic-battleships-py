@@ -368,15 +368,17 @@ class CBattleships():
                             # Display estimated time remaining.
                             elapsed_time = time.time() - self.start_time
                             completed = (percentage - self.start_search) / (self.finish_search - self.start_search)
-                            total_time = elapsed_time / completed
-                            estimated_time = 60 + (1 - completed) * total_time
+                            total_time = 60 + elapsed_time / completed
+                            estimated_time = (1 - completed) * total_time
                             if self.indent > 0:
-                                print('\033[{}C  {:02.0f}:{:02.0f} '.format(self.indent, estimated_time // 3600, estimated_time % 3600 // 60), end='\r', flush=True)
-                                # print('\033[{}C  {:02.0f}:{:02.0f} '.format(self.indent, estimated_time // 60, estimated_time % 60), end='\r', flush=True)
-                                # print('\033[{}C{:>7.3f} '.format(self.indent, completed), end='\r', flush=True)
+                                print('\033[{}C {:03.0f}:{:02.0f} '.format(self.indent, estimated_time // 3600, estimated_time % 3600 // 60))
+                                print('\033[{}C {:03.0f}:{:02.0f} '.format(self.indent, elapsed_time // 3600, elapsed_time % 3600 // 60))
+                                print('\033[{}C {:03.0f}:{:02.0f} '.format(self.indent, total_time // 3600, total_time % 3600 // 60), end='\r\033[2A', flush=True)
                             else:
                                 # print('{:>7.3f} '.format(completed), end='\r', flush=True)
-                                print('  {:02.0f}:{:02.0f} '.format(estimated_time // 3600, estimated_time % 3600 // 60), end='\r', flush=True)
+                                print(' {:03.0f}:{:02.0f} '.format(estimated_time // 3600, estimated_time % 3600 // 60))
+                                print(' {:03.0f}:{:02.0f} '.format(elapsed_time // 3600, elapsed_time % 3600 // 60))
+                                print(' {:03.0f}:{:02.0f} '.format(total_time // 3600, total_time % 3600 // 60), end='\r\033[2A', flush=True)
                         else:
                             # Display progress percentage.
                             if self.indent > 0:
