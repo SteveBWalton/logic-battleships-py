@@ -146,7 +146,6 @@ class CBattleships():
         self.label = sLabel
         self.transpose = False
         self.solve_game = True
-        self.show_remain_time = False
         for nRow in range(0, self.grid):
             self.horizontal.append(1)
             self.vertical.append(1)
@@ -244,6 +243,7 @@ class CBattleships():
             # print(self.horizontal[nRow], end='')
             # print('{}, {}'.format(self.line[nRow], self.VerticalLine(nRow)))
 
+        print('\033[K', end='')
         Write(u"\u2517")
         for Y in range(0, self.grid):
             Write(u"\u2501")
@@ -256,6 +256,7 @@ class CBattleships():
             Write(u"\u251B")
         WriteLine('')
 
+        print('\033[K', end='')
         Write(' ')
         for nRow in range(0, self.grid):
             Write('{}'.format(self.vertical[nRow]))
@@ -366,27 +367,20 @@ class CBattleships():
                     # if self.count % 100000 == 0:
                     if self.count % 1000000 == 0:
                         # These write an extra space into the next progress box.
-                        if self.show_remain_time:
-                            # Display estimated time remaining.
-                            elapsed_time = time.time() - self.start_time
-                            completed = (percentage - self.start_search) / (self.finish_search - self.start_search)
-                            total_time = 60 + elapsed_time / completed
-                            estimated_time = (1 - completed) * total_time
-                            if self.indent > 0:
-                                print('\033[{}C {:03.0f}:{:02.0f} '.format(self.indent, estimated_time // 3600, estimated_time % 3600 // 60))
-                                print('\033[{}C {:03.0f}:{:02.0f} '.format(self.indent, elapsed_time // 3600, elapsed_time % 3600 // 60))
-                                print('\033[{}C {:03.0f}:{:02.0f} '.format(self.indent, total_time // 3600, total_time % 3600 // 60), end='\r\033[2A', flush=True)
-                            else:
-                                # print('{:>7.3f} '.format(completed), end='\r', flush=True)
-                                print(' {:03.0f}:{:02.0f} '.format(estimated_time // 3600, estimated_time % 3600 // 60))
-                                print(' {:03.0f}:{:02.0f} '.format(elapsed_time // 3600, elapsed_time % 3600 // 60))
-                                print(' {:03.0f}:{:02.0f} '.format(total_time // 3600, total_time % 3600 // 60), end='\r\033[2A', flush=True)
+                        elapsed_time = time.time() - self.start_time
+                        completed = (percentage - self.start_search) / (self.finish_search - self.start_search)
+                        total_time = elapsed_time / completed
+                        estimated_time = 30 + (1 - completed) * total_time
+                        if self.indent > 0:
+                            print('\033[{}C{:>7.3f} '.format(self.indent, percentage))
+                            print('\033[{}C {:03.0f}:{:02.0f} '.format(self.indent, estimated_time // 3600, estimated_time % 3600 // 60))
+                            print('\033[{}C {:03.0f}:{:02.0f} '.format(self.indent, elapsed_time // 3600, elapsed_time % 3600 // 60))
+                            print('\033[{}C {:03.0f}:{:02.0f} '.format(self.indent, total_time // 3600, total_time % 3600 // 60), end='\r\033[3A', flush=True)
                         else:
-                            # Display progress percentage.
-                            if self.indent > 0:
-                                print('\033[{}C{:>7.3f} '.format(self.indent, percentage), end='\r', flush=True)
-                            else:
-                                print('{:>7.3f} '.format(percentage), end='\r', flush=True)
+                            print('{:>7.3f} '.format(percentage))
+                            print(' {:03.0f}:{:02.0f} '.format(estimated_time // 3600, estimated_time % 3600 // 60))
+                            print(' {:03.0f}:{:02.0f} '.format(elapsed_time // 3600, elapsed_time % 3600 // 60))
+                            print(' {:03.0f}:{:02.0f} '.format(total_time // 3600, total_time % 3600 // 60), end='\r\033[3A', flush=True)
                 else:
                     self.Search(nLevel+1)
 
@@ -459,6 +453,7 @@ class CBattleships():
                         print('\033[{}C ------ '.format(self.indent), end='\r', flush=True)
                     else:
                         print(' ------ ', end='\r', flush=True)
+
             # print('Search Space  {:,}'.format(self.number))
             # print('Actual Search {:,}'.format(self.count))
         else:
@@ -479,8 +474,6 @@ class CBattleships():
             self.solve_game = False
         if oArgs.transpose:
             self.transpose = True
-        if oArgs.remain:
-            self.show_remain_time = True
 
 
 
@@ -649,8 +642,6 @@ def Main():
                 oCommand = [__file__, '--game', '{}'.format(nGame) , '--start', '{}'.format(fStart), '--finish', '{}'.format(fStart + fAmount), '--indent', '{}'.format(nIndent), '--threads', '1']
                 if oGame.transpose:
                     oCommand.append('-p')
-                if oGame.show_remain_time:
-                    oCommand.append('-r')
                 if oArgs.verbose:
                     oCommand.append('-v')
                 Threads.append(subprocess.Popen(oCommand))
@@ -662,8 +653,6 @@ def Main():
                 oCommand = [__file__, '--game', '{}'.format(nGame), '--start', '{}'.format(fStart), '--indent', '{}'.format(nIndent), '--threads', '1']
                 if oGame.transpose:
                     oCommand.append('-p')
-                if oGame.show_remain_time:
-                    oCommand.append('-r')
                 if oArgs.verbose:
                     oCommand.append('-v')
                 Threads.append(subprocess.Popen(oCommand))
@@ -673,17 +662,15 @@ def Main():
                 oCommand = [__file__, '--game', '{}'.format(nGame), '--start', '{}'.format(fStart), '--finish', '{}'.format(oGame.finish_search), '--indent', '{}'.format(nIndent), '--threads', '1']
                 if oGame.transpose:
                     oCommand.append('-p')
-                if oGame.show_remain_time:
-                    oCommand.append('-r')
                 if oArgs.verbose:
                     oCommand.append('-v')
                 Threads.append(subprocess.Popen(oCommand))
 
             while AnyThreadRunning(Threads):
                 time.sleep(10)
-            if oArgs.remain:
-                print()
-                print()
+            print()
+            print()
+            print()
             print()
             print('\033[KFinished.')
 
