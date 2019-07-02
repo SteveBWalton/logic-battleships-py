@@ -204,6 +204,7 @@ class CBattleships():
         Ships = self.GetShips()
 
         # Display the game position.
+        print('\033[K', end='')
         Write(u"\u250F")
         for Y in range(0, self.grid):
             Write(u"\u2501")
@@ -217,6 +218,7 @@ class CBattleships():
         WriteLine('')
 
         for nRow in range(0, self.grid):
+            print('\033[K', end='')
             Write(u"\u2503")
             DisplayLine(self.grid, self.line[nRow])
             Write(u"\u2503")
@@ -679,6 +681,10 @@ def Main():
 
             while AnyThreadRunning(Threads):
                 time.sleep(10)
+            if oArgs.remain:
+                print()
+                print()
+            print()
             print('\033[KFinished.')
 
         # Exit this script.
