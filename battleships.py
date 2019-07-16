@@ -365,7 +365,7 @@ class CBattleships():
                     self.count = self.count + 1
                     # Display the progress on this thread.
                     # if self.count % 100000 == 0:
-                    if self.count % 1000000 == 0:
+                    if self.count % 10000000 == 0:
                         # These write an extra space into the next progress box.
                         elapsed_time = time.time() - self.start_time
                         completed = (percentage - self.start_search) / (self.finish_search - self.start_search)
