@@ -119,12 +119,12 @@ def AnyThreadRunning(Threads):
 
 
 
-class CBattleships():
+class Battleships():
     ''' Class to represent a game of Battleships. '''
 
 
 
-    def __init__(self, nGrid, nMaxShip, sLabel, oArgs):
+    def __init__(self, nGrid, nMaxShip, sLabel, args):
         ''''
         Class Constructor.
 
@@ -137,7 +137,7 @@ class CBattleships():
         self.horizontal = []
         self.vertical = []
         self.mask = []
-        self.negative_mask = []
+        self.negativeMask = []
         self.line = []
         self.check_ships = True
         self.start_search = 0
@@ -151,9 +151,9 @@ class CBattleships():
             self.vertical.append(1)
             self.line.append(0)
             self.mask.append(0)
-            self.negative_mask.append(0)
-        if oArgs != None:
-            self.ApplyParameters(oArgs)
+            self.negativeMask.append(0)
+        if args != None:
+            self.ApplyParameters(args)
 
 
 
@@ -415,13 +415,13 @@ class CBattleships():
                     nMask = 2 ** Y
                     if self.mask[X] & nMask == nMask:
                         Write(u"\u2588")
-                    elif self.negative_mask[X] & nMask == nMask:
+                    elif self.negativeMask[X] & nMask == nMask:
                         Write(u"\u00B7")
                     else:
                         Write(' ')
                 Write(u"\u2503")
-            # print('{} {} {}'.format(self.horizontal[X], self.mask[X], self.negative_mask[X]))
-            PossibleLines = GetPossibleLines(self.grid, self.horizontal[X], self.max_ship, self.mask[X], self.negative_mask[X])
+            # print('{} {} {}'.format(self.horizontal[X], self.mask[X], self.negativeMask[X]))
+            PossibleLines = GetPossibleLines(self.grid, self.horizontal[X], self.max_ship, self.mask[X], self.negativeMask[X])
             self.posibilities.append(PossibleLines)
             self.number = self.number * len(PossibleLines)
             if self.ShowInitialPosition():
@@ -462,17 +462,17 @@ class CBattleships():
 
 
 
-    def ApplyParameters(self, oArgs):
+    def ApplyParameters(self, args):
         ''' Apply the parameters to the game object. '''
-        if oArgs.start != None:
-            self.start_search = float(oArgs.start)
-        if oArgs.finish != None:
-            self.finish_search = float(oArgs.finish)
-        if oArgs.indent != None:
-            self.indent = int(oArgs.indent)
-        if oArgs.threads != None:
+        if args.start != None:
+            self.start_search = float(args.start)
+        if args.finish != None:
+            self.finish_search = float(args.finish)
+        if args.indent != None:
+            self.indent = int(args.indent)
+        if args.threads != None:
             self.solve_game = False
-        if oArgs.transpose:
+        if args.transpose:
             self.transpose = True
 
 
@@ -508,42 +508,42 @@ class CBattleships():
             nWork = 0
             for Y in range(0, self.grid):
                 # print('{} {}'.format(self.mask[Y], nMask))
-                if self.negative_mask[Y] & nMask == nMask:
+                if self.negativeMask[Y] & nMask == nMask:
                     nWork |= nAdd
                 nAdd *= 2
             TransposedMask.append(nWork)
             nMask *= 2
 
         for X in range(0, self.grid):
-            self.negative_mask[X] = TransposedMask[X]
+            self.negativeMask[X] = TransposedMask[X]
 
 
 
 def Main():
     # Process the command line arguments.
     # This might end the program (--help).
-    oParse = argparse.ArgumentParser(prog='battleships', description='Solver for Battleships.')
-    oParse.add_argument('-g', '--game', help='The index of the game to solve.', action='store')
-    oParse.add_argument('-s', '--start', help='The starting percentage.', action='store')
-    oParse.add_argument('-f', '--finish', help='The finish percentage.', action='store')
-    oParse.add_argument('-i', '--indent', help='The indent for the progress percentage.', action='store')
-    oParse.add_argument('-t', '--threads', help='Split the program into threads.', action='store')
-    oParse.add_argument('-p', '--transpose', help='Switch the problem 90 degrees.', action='store_true')
-    oParse.add_argument('-r', '--remain', help='Display estimated time remaining not progress.', action='store_true')
-    oParse.add_argument('-v', '--verbose', help='Increase the output level.', action='store_true')
+    argParse = argparse.ArgumentParser(prog='battleships', description='Solver for Battleships.')
+    argParse.add_argument('-g', '--game', help='The index of the game to solve.', action='store')
+    argParse.add_argument('-s', '--start', help='The starting percentage.', action='store')
+    argParse.add_argument('-f', '--finish', help='The finish percentage.', action='store')
+    argParse.add_argument('-i', '--indent', help='The indent for the progress percentage.', action='store')
+    argParse.add_argument('-t', '--threads', help='Split the program into threads.', action='store')
+    argParse.add_argument('-p', '--transpose', help='Switch the problem 90 degrees.', action='store_true')
+    argParse.add_argument('-r', '--remain', help='Display estimated time remaining not progress.', action='store_true')
+    argParse.add_argument('-v', '--verbose', help='Increase the output level.', action='store_true')
 
-    oArgs = oParse.parse_args()
+    args = argParse.parse_args()
 
     # Display the parameters.
-    if oArgs.verbose:
+    if args.verbose:
         print(sys.argv)
 
     # Reset the output file.
-    if oArgs.threads == None:
+    if args.threads == None:
         oFile = open('results.txt', 'w')
         oFile.close()
     else:
-        nThreads = int(oArgs.threads)
+        nThreads = int(args.threads)
         if nThreads > 1:
             oFile = open('results.txt', 'w')
             oFile.close()
@@ -551,9 +551,9 @@ def Main():
     # Indentify the game to solve.
     bShowGame = False
     nGame = 0
-    if oArgs.game != None:
+    if args.game != None:
         try:
-            nGame = int(oArgs.game)
+            nGame = int(args.game)
         except:
             pass
     while nGame == 0:
@@ -567,15 +567,15 @@ def Main():
             nGame = 0
     # print('Game = {}'.format(nGame))
 
-    oGame = modGetGame.GetGame(nGame, oArgs)
+    oGame = modGetGame.getGame(nGame, args)
 
     if oGame.transpose:
         oGame.Transpose()
 
-    if oArgs.threads == None:
+    if args.threads == None:
         bShowGame = True
     else:
-        nThreads = int(oArgs.threads)
+        nThreads = int(args.threads)
         if nThreads > 1:
             bShowGame = True
 
@@ -587,7 +587,7 @@ def Main():
         WriteLine(u"\u2513")
         nNumber = 1
         for X in range(0, oGame.grid):
-            PossibleLines = GetPossibleLines(oGame.grid, oGame.horizontal[X], oGame.max_ship, oGame.mask[X], oGame.negative_mask[X])
+            PossibleLines = GetPossibleLines(oGame.grid, oGame.horizontal[X], oGame.max_ship, oGame.mask[X], oGame.negativeMask[X])
             nNumber = nNumber * len(PossibleLines)
 
             Write(u"\u2503")
@@ -595,12 +595,12 @@ def Main():
                 nMask = 2 ** Y
                 if oGame.mask[X] & nMask == nMask:
                     Write(u"\u2588")
-                elif oGame.negative_mask[X] & nMask == nMask:
+                elif oGame.negativeMask[X] & nMask == nMask:
                     Write(u"\u00B7")
                 else:
                     Write(' ')
             Write(u"\u2503")
-            WriteLine('{}     {:4n} {:4n}    There are {} possible lines.'.format(oGame.horizontal[X], oGame.mask[X], oGame.negative_mask[X], len(PossibleLines)))
+            WriteLine('{}     {:4n} {:4n}    There are {} possible lines.'.format(oGame.horizontal[X], oGame.mask[X], oGame.negativeMask[X], len(PossibleLines)))
 
         Write(u"\u2517")
         for Y in range(0, oGame.grid):
@@ -614,17 +614,17 @@ def Main():
 
         WriteLine('Search space is {:,}.  log = {:0.2f}'.format(nNumber, math.log10(nNumber)))
 
-    if oArgs.threads != None:
-        nThreads = int(oArgs.threads)
+    if args.threads != None:
+        nThreads = int(args.threads)
         if nThreads <= 1:
             # Give the other threads time to output initial status.
             time.sleep(1)
 
-            # print('oArgs.threads = {}.'.format(nThreads))
+            # print('args.threads = {}.'.format(nThreads))
             # Solve the specified game.
             oGame.Solve()
         else:
-            # print('oArgs.threads = {}.'.format(nThreads))
+            # print('args.threads = {}.'.format(nThreads))
             import subprocess
             nSplit = nThreads
             if nSplit > 20:
@@ -637,32 +637,32 @@ def Main():
             nIndent = 0
             Threads = []
             for nIndex in range(0, nSplit-1):
-                if oArgs.verbose:
+                if args.verbose:
                     print('Thread({}) --game={} --start={} --finish={} --indent={} --threads={}'.format(nIndex, nGame, fStart, fStart + fAmount, nIndent, 1))
                 oCommand = [__file__, '--game', '{}'.format(nGame) , '--start', '{}'.format(fStart), '--finish', '{}'.format(fStart + fAmount), '--indent', '{}'.format(nIndent), '--threads', '1']
                 if oGame.transpose:
                     oCommand.append('-p')
-                if oArgs.verbose:
+                if args.verbose:
                     oCommand.append('-v')
                 Threads.append(subprocess.Popen(oCommand))
                 fStart = fStart + fAmount
                 nIndent = nIndent + 7
             if oGame.finish_search >= 100:
-                if oArgs.verbose:
+                if args.verbose:
                     print('Thread({}) --game={} --start={} --indent={} --threads={}'.format(nSplit-1, nGame, fStart, nIndent, 1))
                 oCommand = [__file__, '--game', '{}'.format(nGame), '--start', '{}'.format(fStart), '--indent', '{}'.format(nIndent), '--threads', '1']
                 if oGame.transpose:
                     oCommand.append('-p')
-                if oArgs.verbose:
+                if args.verbose:
                     oCommand.append('-v')
                 Threads.append(subprocess.Popen(oCommand))
             else:
-                if oArgs.verbose:
+                if args.verbose:
                     print('Thread({}) --game={} --start={} --finish={} --indent={} --threads={}'.format(nSplit-1, nGame, fStart, oGame.finish_search, nIndent, 1))
                 oCommand = [__file__, '--game', '{}'.format(nGame), '--start', '{}'.format(fStart), '--finish', '{}'.format(oGame.finish_search), '--indent', '{}'.format(nIndent), '--threads', '1']
                 if oGame.transpose:
                     oCommand.append('-p')
-                if oArgs.verbose:
+                if args.verbose:
                     oCommand.append('-v')
                 Threads.append(subprocess.Popen(oCommand))
 
