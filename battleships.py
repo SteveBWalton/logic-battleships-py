@@ -139,9 +139,9 @@ class Battleships():
         self.mask = []
         self.negativeMask = []
         self.line = []
-        self.check_ships = True
-        self.start_search = 0
-        self.finish_search = 100
+        self.isCheckShips = True
+        self.startSearch = 0
+        self.finishSearch = 100
         self.indent = 2
         self.label = label
         self.isTranspose = False
@@ -157,9 +157,9 @@ class Battleships():
 
 
 
-    def VerticalLine(self, nIndex):
+    def verticalLine(self, index):
         ''' Calculates the score for the vertical line. '''
-        mask = 2 ** nIndex
+        mask = 2 ** index
         line = 0
         for row in range(self.grid):
             if self.line[row] & mask == mask:
@@ -187,7 +187,7 @@ class Battleships():
             ships.append(0)
         for row in range(0, self.grid):
             countShipsOnLine(self.line[row], ships)
-            countShipsOnLine(self.VerticalLine(row), ships)
+            countShipsOnLine(self.verticalLine(row), ships)
         shipsOne = self.totalShips
         for shipSize in range(0, self.maxShip+1):
             shipsOne -= shipSize * ships[shipSize]
@@ -241,7 +241,7 @@ class Battleships():
             writeLine('')
 
             # print(self.horizontal[row], end='')
-            # print('{}, {}'.format(self.line[row], self.VerticalLine(row)))
+            # print('{}, {}'.format(self.line[row], self.verticalLine(row)))
 
         print('\033[K', end='')
         write(u"\u2517")
@@ -274,7 +274,7 @@ class Battleships():
         ''' Returns true if the current position is valid solution to the problem. '''
 
         for row in range(0, self.grid):
-            line = self.VerticalLine(row)
+            line = self.verticalLine(row)
 
             # Check that the vertical lines match the conditions
             if countSolids(line) != self.vertical[row]:
@@ -299,7 +299,7 @@ class Battleships():
                         return False
 
         # Optionally check for the correct number of ships.
-        if self.check_ships:
+        if self.isCheckShips:
             ships = self.getShips()
             if ships[1] != 4:
                 return False
@@ -343,22 +343,22 @@ class Battleships():
     def Search(self, nLevel):
         ''' Search for a solution at the specified level. '''
         percentage = 100 * self.count / self.number
-        if percentage < self.start_search:
+        if percentage < self.startSearch:
             nStep = self.GetNumPossible(nLevel)
             # print('Level = {} Step = {}'.format(nLevel, nStep))
             step_percentage = 100 * ( self.count + nStep ) / self.number
             # print('\tPercentage = {}'.format(step_percentage))
-            if step_percentage < self.start_search:
+            if step_percentage < self.startSearch:
                 self.count = self.count + nStep
                 return
             else:
                 pass
                 #print('GO')
-        if percentage <= self.finish_search:
+        if percentage <= self.finishSearch:
             for Possible in self.posibilities[nLevel]:
                 self.line[nLevel] = Possible
                 if nLevel == self.grid - 1:
-                    if percentage >= self.start_search: # and percentage <= self.finish_search:
+                    if percentage >= self.startSearch: # and percentage <= self.finishSearch:
                         if self.isValidSolution():
                             writeLine('\033[K{}'.format(datetime.datetime.now()))
                             self.write()
@@ -368,7 +368,7 @@ class Battleships():
                     if self.count % 10000000 == 0:
                         # These write an extra space into the next progress box.
                         elapsed_time = time.time() - self.start_time
-                        completed = (percentage - self.start_search) / (self.finish_search - self.start_search)
+                        completed = (percentage - self.startSearch) / (self.finishSearch - self.startSearch)
                         total_time = elapsed_time / completed
                         estimated_time = 30 + (1 - completed) * total_time
                         if self.indent > 0:
@@ -388,7 +388,7 @@ class Battleships():
 
     def isShowInitialPosition(self):
         ''' Returns true if the inital position should be shown. '''
-        # if self.start_search == 0: # and self.finish_search == 100:
+        # if self.startSearch == 0: # and self.finishSearch == 100:
         #    return True
         return False
 
@@ -465,9 +465,9 @@ class Battleships():
     def ApplyParameters(self, args):
         ''' Apply the parameters to the game object. '''
         if args.start != None:
-            self.start_search = float(args.start)
+            self.startSearch = float(args.start)
         if args.finish != None:
-            self.finish_search = float(args.finish)
+            self.finishSearch = float(args.finish)
         if args.indent != None:
             self.indent = int(args.indent)
         if args.threads != None:
@@ -632,39 +632,39 @@ def main():
             elif nSplit < 2:
                 nSplit = 2
 
-            fAmount = float((game.finish_search - game.start_search) / nSplit)
-            fStart = game.start_search
-            nIndent = 0
+            fAmount = float((game.finishSearch - game.startSearch) / nSplit)
+            fStart = game.startSearch
+            indent = 0
             threads = []
-            for nIndex in range(0, nSplit-1):
+            for i in range(0, nSplit-1):
                 if args.verbose:
-                    print('Thread({}) --game={} --start={} --finish={} --indent={} --threads={}'.format(nIndex, nGame, fStart, fStart + fAmount, nIndent, 1))
-                oCommand = [__file__, '--game', '{}'.format(nGame) , '--start', '{}'.format(fStart), '--finish', '{}'.format(fStart + fAmount), '--indent', '{}'.format(nIndent), '--threads', '1']
+                    print('Thread({}) --game={} --start={} --finish={} --indent={} --threads={}'.format(i, nGame, fStart, fStart + fAmount, indent, 1))
+                command = [__file__, '--game', '{}'.format(nGame) , '--start', '{}'.format(fStart), '--finish', '{}'.format(fStart + fAmount), '--indent', '{}'.format(indent), '--threads', '1']
                 if game.isTranspose:
-                    oCommand.append('-p')
+                    command.append('-p')
                 if args.verbose:
-                    oCommand.append('-v')
-                threads.append(subprocess.Popen(oCommand))
-                fStart = fStart + fAmount
-                nIndent = nIndent + 7
-            if game.finish_search >= 100:
+                    command.append('-v')
+                threads.append(subprocess.Popen(command))
+                fStart += fAmount
+                indent += 7
+            if game.finishSearch >= 100:
                 if args.verbose:
-                    print('Thread({}) --game={} --start={} --indent={} --threads={}'.format(nSplit-1, nGame, fStart, nIndent, 1))
-                oCommand = [__file__, '--game', '{}'.format(nGame), '--start', '{}'.format(fStart), '--indent', '{}'.format(nIndent), '--threads', '1']
+                    print('Thread({}) --game={} --start={} --indent={} --threads={}'.format(nSplit-1, nGame, fStart, indent, 1))
+                command = [__file__, '--game', '{}'.format(nGame), '--start', '{}'.format(fStart), '--indent', '{}'.format(indent), '--threads', '1']
                 if game.isTranspose:
-                    oCommand.append('-p')
+                    command.append('-p')
                 if args.verbose:
-                    oCommand.append('-v')
-                threads.append(subprocess.Popen(oCommand))
+                    command.append('-v')
+                threads.append(subprocess.Popen(command))
             else:
                 if args.verbose:
-                    print('Thread({}) --game={} --start={} --finish={} --indent={} --threads={}'.format(nSplit-1, nGame, fStart, game.finish_search, nIndent, 1))
-                oCommand = [__file__, '--game', '{}'.format(nGame), '--start', '{}'.format(fStart), '--finish', '{}'.format(game.finish_search), '--indent', '{}'.format(nIndent), '--threads', '1']
+                    print('Thread({}) --game={} --start={} --finish={} --indent={} --threads={}'.format(nSplit-1, nGame, fStart, game.finishSearch, indent, 1))
+                command = [__file__, '--game', '{}'.format(nGame), '--start', '{}'.format(fStart), '--finish', '{}'.format(game.finishSearch), '--indent', '{}'.format(indent), '--threads', '1']
                 if game.isTranspose:
-                    oCommand.append('-p')
+                    command.append('-p')
                 if args.verbose:
-                    oCommand.append('-v')
-                threads.append(subprocess.Popen(oCommand))
+                    command.append('-v')
+                threads.append(subprocess.Popen(command))
 
             while isAnyThreadRunning(threads):
                 time.sleep(10)
