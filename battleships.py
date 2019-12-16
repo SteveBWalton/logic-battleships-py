@@ -332,57 +332,55 @@ class Battleships():
 
 
 
-    def GetNumPossible(self, nLevel):
-        nAnswer = 1
-        for index in range(nLevel, self.grid):
-            nAnswer = nAnswer * len(self.posibilities[index])
-        return nAnswer
+    def getNumPossible(self, level):
+        answer = 1
+        for index in range(level, self.grid):
+            answer *= len(self.posibilities[index])
+        return answer
 
 
 
-    def Search(self, nLevel):
+    def search(self, level):
         ''' Search for a solution at the specified level. '''
         percentage = 100 * self.count / self.number
         if percentage < self.startSearch:
-            nStep = self.GetNumPossible(nLevel)
-            # print('Level = {} Step = {}'.format(nLevel, nStep))
-            step_percentage = 100 * ( self.count + nStep ) / self.number
-            # print('\tPercentage = {}'.format(step_percentage))
-            if step_percentage < self.startSearch:
-                self.count = self.count + nStep
+            numSteps = self.getNumPossible(level)
+            stepPercentage = 100 * ( self.count + numSteps ) / self.number
+            if stepPercentage < self.startSearch:
+                self.count += numSteps
                 return
             else:
                 pass
                 #print('GO')
         if percentage <= self.finishSearch:
-            for Possible in self.posibilities[nLevel]:
-                self.line[nLevel] = Possible
-                if nLevel == self.grid - 1:
+            for possible in self.posibilities[level]:
+                self.line[level] = possible
+                if level == self.grid - 1:
                     if percentage >= self.startSearch: # and percentage <= self.finishSearch:
                         if self.isValidSolution():
                             writeLine('\033[K{}'.format(datetime.datetime.now()))
                             self.write()
-                    self.count = self.count + 1
+                    self.count += 1
                     # Display the progress on this thread.
                     # if self.count % 100000 == 0:
                     if self.count % 10000000 == 0:
                         # These write an extra space into the next progress box.
-                        elapsed_time = time.time() - self.start_time
+                        elapsedTime = time.time() - self.start_time
                         completed = (percentage - self.startSearch) / (self.finishSearch - self.startSearch)
-                        total_time = elapsed_time / completed
-                        estimated_time = 30 + (1 - completed) * total_time
+                        totalTime = elapsedTime / completed
+                        estimatedTime = 30 + (1 - completed) * totalTime
                         if self.indent > 0:
                             print('\033[{}C{:>7.3f} '.format(self.indent, percentage))
-                            print('\033[{}C {:03.0f}:{:02.0f} '.format(self.indent, estimated_time // 3600, estimated_time % 3600 // 60))
-                            print('\033[{}C {:03.0f}:{:02.0f} '.format(self.indent, elapsed_time // 3600, elapsed_time % 3600 // 60))
-                            print('\033[{}C {:03.0f}:{:02.0f} '.format(self.indent, total_time // 3600, total_time % 3600 // 60), end='\r\033[3A', flush=True)
+                            print('\033[{}C {:03.0f}:{:02.0f} '.format(self.indent, estimatedTime // 3600, estimatedTime % 3600 // 60))
+                            print('\033[{}C {:03.0f}:{:02.0f} '.format(self.indent, elapsedTime // 3600, elapsedTime % 3600 // 60))
+                            print('\033[{}C {:03.0f}:{:02.0f} '.format(self.indent, totalTime // 3600, totalTime % 3600 // 60), end='\r\033[3A', flush=True)
                         else:
                             print('{:>7.3f} '.format(percentage))
-                            print(' {:03.0f}:{:02.0f} '.format(estimated_time // 3600, estimated_time % 3600 // 60))
-                            print(' {:03.0f}:{:02.0f} '.format(elapsed_time // 3600, elapsed_time % 3600 // 60))
-                            print(' {:03.0f}:{:02.0f} '.format(total_time // 3600, total_time % 3600 // 60), end='\r\033[3A', flush=True)
+                            print(' {:03.0f}:{:02.0f} '.format(estimatedTime // 3600, estimatedTime % 3600 // 60))
+                            print(' {:03.0f}:{:02.0f} '.format(elapsedTime // 3600, elapsedTime % 3600 // 60))
+                            print(' {:03.0f}:{:02.0f} '.format(totalTime // 3600, totalTime % 3600 // 60), end='\r\033[3A', flush=True)
                 else:
-                    self.Search(nLevel+1)
+                    self.search(level+1)
 
 
 
@@ -394,7 +392,7 @@ class Battleships():
 
 
 
-    def Solve(self):
+    def solve(self):
         ''' Solve the game of battleships '''
         self.start_time = time.time()
         self.count = 0
@@ -447,7 +445,7 @@ class Battleships():
             self.totalShips = totalShipsHorizontal
             if self.number > 0:
                 if self.isSolveGame:
-                    self.Search(0)
+                    self.search(0)
                     # These write an extra space into the next progress box.
                     if self.indent > 0:
                         print('\033[{}C ------ '.format(self.indent), end='\r', flush=True)
@@ -543,13 +541,13 @@ def main():
         oFile = open('results.txt', 'w')
         oFile.close()
     else:
-        nThreads = int(args.threads)
-        if nThreads > 1:
+        numThreads = int(args.threads)
+        if numThreads > 1:
             oFile = open('results.txt', 'w')
             oFile.close()
 
     # Indentify the game to solve.
-    bShowGame = False
+    isShowGame = False
     nGame = 0
     if args.game != None:
         try:
@@ -557,7 +555,7 @@ def main():
         except:
             pass
     while nGame == 0:
-        bShowGame = True
+        isShowGame = True
         print('Please enter the game number.')
         nGame = input()
         try:
@@ -573,13 +571,13 @@ def main():
         game.Transpose()
 
     if args.threads == None:
-        bShowGame = True
+        isShowGame = True
     else:
-        nThreads = int(args.threads)
-        if nThreads > 1:
-            bShowGame = True
+        numThreads = int(args.threads)
+        if numThreads > 1:
+            isShowGame = True
 
-    if bShowGame:
+    if isShowGame:
         writeLine(game.label)
         write(u"\u250F")
         for y in range(0, game.grid):
@@ -615,18 +613,18 @@ def main():
         writeLine('Search space is {:,}.  log = {:0.2f}'.format(nNumber, math.log10(nNumber)))
 
     if args.threads != None:
-        nThreads = int(args.threads)
-        if nThreads <= 1:
+        numThreads = int(args.threads)
+        if numThreads <= 1:
             # Give the other threads time to output initial status.
             time.sleep(1)
 
-            # print('args.threads = {}.'.format(nThreads))
+            # print('args.threads = {}.'.format(numThreads))
             # Solve the specified game.
-            game.Solve()
+            game.solve()
         else:
-            # print('args.threads = {}.'.format(nThreads))
+            # print('args.threads = {}.'.format(numThreads))
             import subprocess
-            nSplit = nThreads
+            nSplit = numThreads
             if nSplit > 20:
                 nSplit = 20
             elif nSplit < 2:
