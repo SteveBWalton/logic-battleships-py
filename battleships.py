@@ -19,8 +19,8 @@ import modGetGame
 
 
 
-def Write(sText : str):
-    ''' Write the text to the output without a linefeed. '''
+def write(sText : str):
+    ''' write the text to the output without a linefeed. '''
     print(sText, end='')
     oFile = open('results.txt', 'a')
     oFile.write(sText)
@@ -28,8 +28,8 @@ def Write(sText : str):
 
 
 
-def WriteLine(sText: str):
-    ''' Write the text to the output and add a linefeed. '''
+def writeLine(sText: str):
+    ''' write the text to the output and add a linefeed. '''
     print(sText)
     oFile = open('results.txt', 'a')
     oFile.write(sText)
@@ -38,21 +38,21 @@ def WriteLine(sText: str):
 
 
 
-def DisplayLine(nNumPositions, nLine):
+def displayLine(numPositions, line):
     ''' Function to display a horizontal line in a Battleship problem '''
     nMask = 1
-    for nPos in range(0, nNumPositions):
-        if nLine & nMask == nMask:
-            Write(u"\u2588")
+    for nPos in range(0, numPositions):
+        if line & nMask == nMask:
+            write(u"\u2588")
         else:
-            Write(u"\u00B7")
+            write(u"\u00B7")
         nMask *= 2
 
 
 
-def CountSolids(nLine):
+def CountSolids(line):
     ''' Returns the number of solids in the specified line position. '''
-    sBinary = '{0:b}'.format(nLine)
+    sBinary = '{0:b}'.format(line)
     nCount = 0
     for nPos in range (0, len(sBinary)):
         if sBinary[nPos] == '1':
@@ -61,9 +61,9 @@ def CountSolids(nLine):
 
 
 
-def GetLongestShip(nLine):
+def GetLongestShip(line):
     ''' Returns the size of the longest ship on the line. '''
-    sBinary = '{0:b}'.format(nLine)
+    sBinary = '{0:b}'.format(line)
     nMaximum = 0
     nCurrent = 0
     for nPos in range (0, len(sBinary)):
@@ -77,9 +77,9 @@ def GetLongestShip(nLine):
 
 
 
-def CountShipsOnLine(nLine, Ships):
+def CountShipsOnLine(line, Ships):
     ''' Counts the number and size of ships on the line. '''
-    sBinary = '{0:b}'.format(nLine)
+    sBinary = '{0:b}'.format(line)
     nCurrent = 0
     for nPos in range (0, len(sBinary)):
         if sBinary[nPos] == '1':
@@ -94,11 +94,11 @@ def CountShipsOnLine(nLine, Ships):
 
 
 
-def GetPossibleLines(nNumPositions, nNumSolid, nMaxShip, nMask, nNegativeMask):
+def GetPossibleLines(numPositions, nNumSolid, nMaxShip, nMask, nNegativeMask):
     ''' Returns the set of possible lines that have the specified number of solid positions. '''
-    # print('GetPossibleLines({}, {}, {}, {}, {})'.format(nNumPositions, nNumSolid, nMaxShip, nMask, nNegativeMask))
+    # print('GetPossibleLines({}, {}, {}, {}, {})'.format(numPositions, nNumSolid, nMaxShip, nMask, nNegativeMask))
     listResult = []
-    nMaximum = (2 ** nNumPositions)-1
+    nMaximum = (2 ** numPositions)-1
     for nPos in range(0, nMaximum):
         if CountSolids(nPos) == nNumSolid:
             if nPos & nMask == nMask:
@@ -146,7 +146,7 @@ class Battleships():
         self.label = sLabel
         self.transpose = False
         self.solve_game = True
-        for nRow in range(0, self.grid):
+        for row in range(0, self.grid):
             self.horizontal.append(1)
             self.vertical.append(1)
             self.line.append(0)
@@ -160,11 +160,11 @@ class Battleships():
     def VerticalLine(self, nIndex):
         ''' Calculates the score for the vertical line. '''
         nMask = 2 ** nIndex
-        nLine = 0
-        for nRow in range(self.grid):
-            if self.line[nRow] & nMask == nMask:
-                nLine = nLine + 2**nRow
-        return nLine
+        line = 0
+        for row in range(self.grid):
+            if self.line[row] & nMask == nMask:
+                line = line + 2**row
+        return line
 
 
 
@@ -185,9 +185,9 @@ class Battleships():
         Ships = []
         for nSize in range(0, self.max_ship+1):
             Ships.append(0)
-        for nRow in range(0, self.grid):
-            CountShipsOnLine(self.line[nRow], Ships)
-            CountShipsOnLine(self.VerticalLine(nRow), Ships)
+        for row in range(0, self.grid):
+            CountShipsOnLine(self.line[row], Ships)
+            CountShipsOnLine(self.VerticalLine(row), Ships)
         ShipsOne = self.total_ships
         for nSize in range(0, self.max_ship+1):
             ShipsOne = ShipsOne - nSize * Ships[nSize]
@@ -197,70 +197,70 @@ class Battleships():
 
 
 
-    def Print(self):
+    def write(self):
         ''' Print the current game position. '''
         # Get the number and size of ships.
         Ships = self.GetShips()
 
         # Display the game position.
         print('\033[K', end='')
-        Write(u"\u250F")
-        for Y in range(0, self.grid):
-            Write(u"\u2501")
-        Write(u"\u2513")
+        write(u"\u250F")
+        for y in range(0, self.grid):
+            write(u"\u2501")
+        write(u"\u2513")
         if self.transpose:
-            Write('\033[40`')
-            Write(u"\u250F")
-            for Y in range(0, self.grid):
-                Write(u"\u2501")
-            Write(u"\u2513")
-        WriteLine('')
+            write('\033[40`')
+            write(u"\u250F")
+            for y in range(0, self.grid):
+                write(u"\u2501")
+            write(u"\u2513")
+        writeLine('')
 
-        for nRow in range(0, self.grid):
+        for row in range(0, self.grid):
             print('\033[K', end='')
-            Write(u"\u2503")
-            DisplayLine(self.grid, self.line[nRow])
-            Write(u"\u2503")
-            Write('{}'.format(self.horizontal[nRow]))
+            write(u"\u2503")
+            displayLine(self.grid, self.line[row])
+            write(u"\u2503")
+            write('{}'.format(self.horizontal[row]))
 
-            if nRow <= self.max_ship and nRow >= 1:
-                Write('  {} x {} '.format(Ships[nRow], nRow))
-                for nSize in range(0, nRow):
-                    Write(u"\u2588")
+            if row <= self.max_ship and row >= 1:
+                write('  {} x {} '.format(Ships[row], row))
+                for nSize in range(0, row):
+                    write(u"\u2588")
 
             if self.transpose:
-                Write('\033[40`')
-                Write(u"\u2503")
-                nMask = 2**nRow
+                write('\033[40`')
+                write(u"\u2503")
+                nMask = 2**row
                 for nPos in range(0, self.grid):
                     if self.line[nPos] & nMask == nMask:
-                        Write(u"\u2588")
+                        write(u"\u2588")
                     else:
-                        Write(u"\u00B7")
-                Write(u"\u2503")
-            WriteLine('')
+                        write(u"\u00B7")
+                write(u"\u2503")
+            writeLine('')
 
-            # print(self.horizontal[nRow], end='')
-            # print('{}, {}'.format(self.line[nRow], self.VerticalLine(nRow)))
+            # print(self.horizontal[row], end='')
+            # print('{}, {}'.format(self.line[row], self.VerticalLine(row)))
 
         print('\033[K', end='')
-        Write(u"\u2517")
-        for Y in range(0, self.grid):
-            Write(u"\u2501")
-        Write(u"\u251B")
+        write(u"\u2517")
+        for y in range(0, self.grid):
+            write(u"\u2501")
+        write(u"\u251B")
         if self.transpose:
-            Write('\033[40`')
-            Write(u"\u2517")
-            for Y in range(0, self.grid):
-                Write(u"\u2501")
-            Write(u"\u251B")
-        WriteLine('')
+            write('\033[40`')
+            write(u"\u2517")
+            for y in range(0, self.grid):
+                write(u"\u2501")
+            write(u"\u251B")
+        writeLine('')
 
         print('\033[K', end='')
-        Write(' ')
-        for nRow in range(0, self.grid):
-            Write('{}'.format(self.vertical[nRow]))
-        WriteLine('')
+        write(' ')
+        for row in range(0, self.grid):
+            write('{}'.format(self.vertical[row]))
+        writeLine('')
 
         #for X in range(0, self.grid):
         #    for Y in range(0, self.grid):
@@ -273,15 +273,15 @@ class Battleships():
     def IsValidSolution(self):
         ''' Returns true if the current position is valid solution to the problem. '''
 
-        for nRow in range(0, self.grid):
-            nLine = self.VerticalLine(nRow)
+        for row in range(0, self.grid):
+            line = self.VerticalLine(row)
 
             # Check that the vertical lines match the conditions
-            if CountSolids(nLine) != self.vertical[nRow]:
+            if CountSolids(line) != self.vertical[row]:
                 return False
 
             # Check the length of the battle ships.
-            if GetLongestShip(nLine) > self.max_ship:
+            if GetLongestShip(line) > self.max_ship:
                 return False
 
         # Check the ships are not touching.
@@ -360,8 +360,8 @@ class Battleships():
                 if nLevel == self.grid - 1:
                     if percentage >= self.start_search: # and percentage <= self.finish_search:
                         if self.IsValidSolution():
-                            WriteLine('\033[K{}'.format(datetime.datetime.now()))
-                            self.Print()
+                            writeLine('\033[K{}'.format(datetime.datetime.now()))
+                            self.write()
                     self.count = self.count + 1
                     # Display the progress on this thread.
                     # if self.count % 100000 == 0:
@@ -403,45 +403,45 @@ class Battleships():
         nTotalShipsHorizontal = 0
         nTotalShipsVertical = 0
         if self.ShowInitialPosition():
-            WriteLine(self.label)
-            Write(u"\u250F")
+            writeLine(self.label)
+            write(u"\u250F")
             for Y in range(0, self.grid):
-                Write(u"\u2501")
-            WriteLine(u"\u2513")
+                write(u"\u2501")
+            writeLine(u"\u2513")
         for X in range(0, self.grid):
             if self.ShowInitialPosition():
-                Write(u"\u2503")
+                write(u"\u2503")
                 for Y in range(0, self.grid):
                     nMask = 2 ** Y
                     if self.mask[X] & nMask == nMask:
-                        Write(u"\u2588")
+                        write(u"\u2588")
                     elif self.negativeMask[X] & nMask == nMask:
-                        Write(u"\u00B7")
+                        write(u"\u00B7")
                     else:
-                        Write(' ')
-                Write(u"\u2503")
+                        write(' ')
+                write(u"\u2503")
             # print('{} {} {}'.format(self.horizontal[X], self.mask[X], self.negativeMask[X]))
             PossibleLines = GetPossibleLines(self.grid, self.horizontal[X], self.max_ship, self.mask[X], self.negativeMask[X])
             self.posibilities.append(PossibleLines)
             self.number = self.number * len(PossibleLines)
             if self.ShowInitialPosition():
-                WriteLine('{}    There are {} possible lines.'.format(self.horizontal[X], len(PossibleLines)))
+                writeLine('{}    There are {} possible lines.'.format(self.horizontal[X], len(PossibleLines)))
 
             nTotalShipsHorizontal = nTotalShipsHorizontal + self.horizontal[X]
             nTotalShipsVertical = nTotalShipsVertical + self.vertical[X]
 
         if self.ShowInitialPosition():
-            Write(u"\u2517")
+            write(u"\u2517")
             for Y in range(0, self.grid):
-                Write(u"\u2501")
-            WriteLine(u"\u251B")
+                write(u"\u2501")
+            writeLine(u"\u251B")
 
-            Write(' ')
-            for nRow in range(0, self.grid):
-                Write('{}'.format(self.vertical[nRow]))
-            WriteLine('')
+            write(' ')
+            for row in range(0, self.grid):
+                write('{}'.format(self.vertical[row]))
+            writeLine('')
 
-            WriteLine('Search space is {:,}'.format(self.number))
+            writeLine('Search space is {:,}'.format(self.number))
 
         if nTotalShipsHorizontal == nTotalShipsVertical:
             self.total_ships = nTotalShipsHorizontal
@@ -519,7 +519,7 @@ class Battleships():
 
 
 
-def Main():
+def main():
     # Process the command line arguments.
     # This might end the program (--help).
     argParse = argparse.ArgumentParser(prog='battleships', description='Solver for Battleships.')
@@ -580,39 +580,39 @@ def Main():
             bShowGame = True
 
     if bShowGame:
-        WriteLine(oGame.label)
-        Write(u"\u250F")
+        writeLine(oGame.label)
+        write(u"\u250F")
         for Y in range(0, oGame.grid):
-            Write(u"\u2501")
-        WriteLine(u"\u2513")
+            write(u"\u2501")
+        writeLine(u"\u2513")
         nNumber = 1
         for X in range(0, oGame.grid):
             PossibleLines = GetPossibleLines(oGame.grid, oGame.horizontal[X], oGame.max_ship, oGame.mask[X], oGame.negativeMask[X])
             nNumber = nNumber * len(PossibleLines)
 
-            Write(u"\u2503")
+            write(u"\u2503")
             for Y in range(0, oGame.grid):
                 nMask = 2 ** Y
                 if oGame.mask[X] & nMask == nMask:
-                    Write(u"\u2588")
+                    write(u"\u2588")
                 elif oGame.negativeMask[X] & nMask == nMask:
-                    Write(u"\u00B7")
+                    write(u"\u00B7")
                 else:
-                    Write(' ')
-            Write(u"\u2503")
-            WriteLine('{}     {:4n} {:4n}    There are {} possible lines.'.format(oGame.horizontal[X], oGame.mask[X], oGame.negativeMask[X], len(PossibleLines)))
+                    write(' ')
+            write(u"\u2503")
+            writeLine('{}     {:4n} {:4n}    There are {} possible lines.'.format(oGame.horizontal[X], oGame.mask[X], oGame.negativeMask[X], len(PossibleLines)))
 
-        Write(u"\u2517")
+        write(u"\u2517")
         for Y in range(0, oGame.grid):
-            Write(u"\u2501")
-        WriteLine(u"\u251B")
+            write(u"\u2501")
+        writeLine(u"\u251B")
 
-        Write(' ')
-        for nRow in range(0, oGame.grid):
-            Write('{}'.format(oGame.vertical[nRow]))
-        WriteLine('')
+        write(' ')
+        for row in range(0, oGame.grid):
+            write('{}'.format(oGame.vertical[row]))
+        writeLine('')
 
-        WriteLine('Search space is {:,}.  log = {:0.2f}'.format(nNumber, math.log10(nNumber)))
+        writeLine('Search space is {:,}.  log = {:0.2f}'.format(nNumber, math.log10(nNumber)))
 
     if args.threads != None:
         nThreads = int(args.threads)
@@ -680,4 +680,4 @@ def Main():
 
 
 if __name__ == '__main__':
-    Main()
+    main()
