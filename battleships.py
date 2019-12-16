@@ -145,7 +145,7 @@ class Battleships():
         self.indent = 2
         self.label = label
         self.isTranspose = False
-        self.solve_game = True
+        self.isSolveGame = True
         for row in range(0, self.grid):
             self.horizontal.append(1)
             self.vertical.append(1)
@@ -188,7 +188,7 @@ class Battleships():
         for row in range(0, self.grid):
             countShipsOnLine(self.line[row], ships)
             countShipsOnLine(self.VerticalLine(row), ships)
-        shipsOne = self.total_ships
+        shipsOne = self.totalShips
         for shipSize in range(0, self.maxShip+1):
             shipsOne -= shipSize * ships[shipSize]
         ships[1] = shipsOne
@@ -386,7 +386,7 @@ class Battleships():
 
 
 
-    def ShowInitialPosition(self):
+    def isShowInitialPosition(self):
         ''' Returns true if the inital position should be shown. '''
         # if self.start_search == 0: # and self.finish_search == 100:
         #    return True
@@ -400,16 +400,16 @@ class Battleships():
         self.count = 0
         self.number = 1
         self.posibilities = []
-        nTotalShipsHorizontal = 0
-        nTotalShipsVertical = 0
-        if self.ShowInitialPosition():
+        totalShipsHorizontal = 0
+        totalShipsVertical = 0
+        if self.isShowInitialPosition():
             writeLine(self.label)
             write(u"\u250F")
             for y in range(0, self.grid):
                 write(u"\u2501")
             writeLine(u"\u2513")
         for x in range(0, self.grid):
-            if self.ShowInitialPosition():
+            if self.isShowInitialPosition():
                 write(u"\u2503")
                 for y in range(0, self.grid):
                     mask = 2 ** y
@@ -424,13 +424,13 @@ class Battleships():
             possibleLines = getPossibleLines(self.grid, self.horizontal[x], self.maxShip, self.mask[x], self.negativeMask[x])
             self.posibilities.append(possibleLines)
             self.number = self.number * len(possibleLines)
-            if self.ShowInitialPosition():
+            if self.isShowInitialPosition():
                 writeLine('{}    There are {} possible lines.'.format(self.horizontal[x], len(possibleLines)))
 
-            nTotalShipsHorizontal = nTotalShipsHorizontal + self.horizontal[x]
-            nTotalShipsVertical = nTotalShipsVertical + self.vertical[x]
+            totalShipsHorizontal += self.horizontal[x]
+            totalShipsVertical += self.vertical[x]
 
-        if self.ShowInitialPosition():
+        if self.isShowInitialPosition():
             write(u"\u2517")
             for y in range(0, self.grid):
                 write(u"\u2501")
@@ -443,10 +443,10 @@ class Battleships():
 
             writeLine('Search space is {:,}'.format(self.number))
 
-        if nTotalShipsHorizontal == nTotalShipsVertical:
-            self.total_ships = nTotalShipsHorizontal
+        if totalShipsHorizontal == totalShipsVertical:
+            self.totalShips = totalShipsHorizontal
             if self.number > 0:
-                if self.solve_game:
+                if self.isSolveGame:
                     self.Search(0)
                     # These write an extra space into the next progress box.
                     if self.indent > 0:
@@ -457,7 +457,7 @@ class Battleships():
             # print('Search Space  {:,}'.format(self.number))
             # print('Actual Search {:,}'.format(self.count))
         else:
-            print('Total ships horizontal != ships vertical. {} != {}'.format(nTotalShipsHorizontal, nTotalShipsVertical))
+            print('Total ships horizontal != ships vertical. {} != {}'.format(totalShipsHorizontal, totalShipsVertical))
         # print('Finished')
 
 
@@ -471,7 +471,7 @@ class Battleships():
         if args.indent != None:
             self.indent = int(args.indent)
         if args.threads != None:
-            self.solve_game = False
+            self.isSolveGame = False
         if args.transpose:
             self.isTranspose = True
 

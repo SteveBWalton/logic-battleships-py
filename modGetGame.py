@@ -715,6 +715,6 @@ def getGame(index, args):
         game.negativeMask[7] = 0
         game.negativeMask[8] = 0
 
-    game.solve_game = True
+    game.isSolveGame = True
 
     return game
