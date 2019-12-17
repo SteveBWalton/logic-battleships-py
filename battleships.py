@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 '''
-Module to solve BattleShip problems from the Logic Problems game.
+Module to implement the BattleShips class.
 '''
 
 # System libraries for the initial phase.
@@ -14,108 +14,6 @@ import time
 import math
 
 # Application libraries.
-import modGetGame
-
-
-
-
-def write(sText : str):
-    ''' write the text to the output without a linefeed. '''
-    print(sText, end='')
-    oFile = open('results.txt', 'a')
-    oFile.write(sText)
-    oFile.close()
-
-
-
-def writeLine(sText: str):
-    ''' write the text to the output and add a linefeed. '''
-    print(sText)
-    oFile = open('results.txt', 'a')
-    oFile.write(sText)
-    oFile.write("\n")
-    oFile.close()
-
-
-
-def displayLine(numPositions, line):
-    ''' Function to display a horizontal line in a Battleship problem '''
-    mask = 1
-    for pos in range(0, numPositions):
-        if line & mask == mask:
-            write(u"\u2588")
-        else:
-            write(u"\u00B7")
-        mask *= 2
-
-
-
-def countSolids(line):
-    ''' Returns the number of solids in the specified line position. '''
-    binaryLine = '{0:b}'.format(line)
-    count = 0
-    for pos in range (0, len(binaryLine)):
-        if binaryLine[pos] == '1':
-            count += 1
-    return count
-
-
-
-def getLongestShip(line):
-    ''' Returns the size of the longest ship on the line. '''
-    binaryLine = '{0:b}'.format(line)
-    maximumShip = 0
-    current = 0
-    for pos in range (0, len(binaryLine)):
-        if binaryLine[pos] == '1':
-            current += 1
-            if current > maximumShip:
-                maximumShip = current
-        else:
-            current = 0
-    return maximumShip
-
-
-
-def countShipsOnLine(line, ships):
-    ''' Counts the number and size of ships on the line. '''
-    binaryLine = '{0:b}'.format(line)
-    current = 0
-    for pos in range (0, len(binaryLine)):
-        if binaryLine[pos] == '1':
-            current += 1
-        else:
-            if current > 1:
-                ships[current] += 1
-            current = 0
-    if current > 1:
-        ships[current] += 1
-    return True
-
-
-
-def getPossibleLines(numPositions, numSolid, maxShip, mask, negativeMask):
-    ''' Returns the set of possible lines that have the specified number of solid positions. '''
-    # print('getPossibleLines({}, {}, {}, {}, {})'.format(numPositions, numSolid, maxShip, mask, negativeMask))
-    listResult = []
-    maximumLines = (2 ** numPositions) - 1
-    for pos in range(0, maximumLines):
-        if countSolids(pos) == numSolid:
-            if pos & mask == mask:
-                if (~pos) & negativeMask == negativeMask:
-                    if getLongestShip(pos) <= maxShip:
-                        listResult.append(pos)
-    return listResult
-
-
-
-def isAnyThreadRunning(threads):
-    ''' Returns True if any of the specified threads are running. '''
-    isRunning = False
-    for thread in threads:
-        if thread.poll() is None:
-            isRunning = True
-    return isRunning
 
 
 
@@ -516,166 +414,102 @@ class Battleships():
             self.negativeMask[x] = transposedMask[x]
 
 
+def write(sText : str):
+    ''' write the text to the output without a linefeed. '''
+    print(sText, end='')
+    oFile = open('results.txt', 'a')
+    oFile.write(sText)
+    oFile.close()
 
-def main():
-    # Process the command line arguments.
-    # This might end the program (--help).
-    argParse = argparse.ArgumentParser(prog='battleships', description='Solver for Battleships.')
-    argParse.add_argument('-g', '--game', help='The index of the game to solve.', action='store')
-    argParse.add_argument('-s', '--start', help='The starting percentage.', action='store')
-    argParse.add_argument('-f', '--finish', help='The finish percentage.', action='store')
-    argParse.add_argument('-i', '--indent', help='The indent for the progress percentage.', action='store')
-    argParse.add_argument('-t', '--threads', help='Split the program into threads.', action='store')
-    argParse.add_argument('-p', '--transpose', help='Switch the problem 90 degrees.', action='store_true')
-    argParse.add_argument('-r', '--remain', help='Display estimated time remaining not progress.', action='store_true')
-    argParse.add_argument('-v', '--verbose', help='Increase the output level.', action='store_true')
 
-    args = argParse.parse_args()
 
-    # Display the parameters.
-    if args.verbose:
-        print(sys.argv)
+def writeLine(sText: str):
+    ''' write the text to the output and add a linefeed. '''
+    print(sText)
+    oFile = open('results.txt', 'a')
+    oFile.write(sText)
+    oFile.write("\n")
+    oFile.close()
 
-    # Reset the output file.
-    if args.threads == None:
-        oFile = open('results.txt', 'w')
-        oFile.close()
-    else:
-        numThreads = int(args.threads)
-        if numThreads > 1:
-            oFile = open('results.txt', 'w')
-            oFile.close()
 
-    # Indentify the game to solve.
-    isShowGame = False
-    nGame = 0
-    if args.game != None:
-        try:
-            nGame = int(args.game)
-        except:
-            pass
-    while nGame == 0:
-        isShowGame = True
-        print('Please enter the game number.')
-        nGame = input()
-        try:
-            nGame = int(nGame)
-        except:
-            print('I do not understand')
-            nGame = 0
-    # print('Game = {}'.format(nGame))
 
-    game = modGetGame.getGame(nGame, args)
-
-    if game.isTranspose:
-        game.Transpose()
-
-    if args.threads == None:
-        isShowGame = True
-    else:
-        numThreads = int(args.threads)
-        if numThreads > 1:
-            isShowGame = True
-
-    if isShowGame:
-        writeLine(game.label)
-        write(u"\u250F")
-        for y in range(0, game.grid):
-            write(u"\u2501")
-        writeLine(u"\u2513")
-        nNumber = 1
-        for x in range(0, game.grid):
-            possibleLines = getPossibleLines(game.grid, game.horizontal[x], game.maxShip, game.mask[x], game.negativeMask[x])
-            nNumber *= len(possibleLines)
-
-            write(u"\u2503")
-            for y in range(0, game.grid):
-                mask = 2 ** y
-                if game.mask[x] & mask == mask:
-                    write(u"\u2588")
-                elif game.negativeMask[x] & mask == mask:
-                    write(u"\u00B7")
-                else:
-                    write(' ')
-            write(u"\u2503")
-            writeLine('{}     {:4n} {:4n}    There are {} possible lines.'.format(game.horizontal[x], game.mask[x], game.negativeMask[x], len(possibleLines)))
-
-        write(u"\u2517")
-        for y in range(0, game.grid):
-            write(u"\u2501")
-        writeLine(u"\u251B")
-
-        write(' ')
-        for row in range(0, game.grid):
-            write('{}'.format(game.vertical[row]))
-        writeLine('')
-
-        writeLine('Search space is {:,}.  log = {:0.2f}'.format(nNumber, math.log10(nNumber)))
-
-    if args.threads != None:
-        numThreads = int(args.threads)
-        if numThreads <= 1:
-            # Give the other threads time to output initial status.
-            time.sleep(1)
-
-            # print('args.threads = {}.'.format(numThreads))
-            # Solve the specified game.
-            game.solve()
+def displayLine(numPositions, line):
+    ''' Function to display a horizontal line in a Battleship problem '''
+    mask = 1
+    for pos in range(0, numPositions):
+        if line & mask == mask:
+            write(u"\u2588")
         else:
-            # print('args.threads = {}.'.format(numThreads))
-            import subprocess
-            nSplit = numThreads
-            if nSplit > 20:
-                nSplit = 20
-            elif nSplit < 2:
-                nSplit = 2
-
-            fAmount = float((game.finishSearch - game.startSearch) / nSplit)
-            fStart = game.startSearch
-            indent = 0
-            threads = []
-            for i in range(0, nSplit-1):
-                if args.verbose:
-                    print('Thread({}) --game={} --start={} --finish={} --indent={} --threads={}'.format(i, nGame, fStart, fStart + fAmount, indent, 1))
-                command = [__file__, '--game', '{}'.format(nGame) , '--start', '{}'.format(fStart), '--finish', '{}'.format(fStart + fAmount), '--indent', '{}'.format(indent), '--threads', '1']
-                if game.isTranspose:
-                    command.append('-p')
-                if args.verbose:
-                    command.append('-v')
-                threads.append(subprocess.Popen(command))
-                fStart += fAmount
-                indent += 7
-            if game.finishSearch >= 100:
-                if args.verbose:
-                    print('Thread({}) --game={} --start={} --indent={} --threads={}'.format(nSplit-1, nGame, fStart, indent, 1))
-                command = [__file__, '--game', '{}'.format(nGame), '--start', '{}'.format(fStart), '--indent', '{}'.format(indent), '--threads', '1']
-                if game.isTranspose:
-                    command.append('-p')
-                if args.verbose:
-                    command.append('-v')
-                threads.append(subprocess.Popen(command))
-            else:
-                if args.verbose:
-                    print('Thread({}) --game={} --start={} --finish={} --indent={} --threads={}'.format(nSplit-1, nGame, fStart, game.finishSearch, indent, 1))
-                command = [__file__, '--game', '{}'.format(nGame), '--start', '{}'.format(fStart), '--finish', '{}'.format(game.finishSearch), '--indent', '{}'.format(indent), '--threads', '1']
-                if game.isTranspose:
-                    command.append('-p')
-                if args.verbose:
-                    command.append('-v')
-                threads.append(subprocess.Popen(command))
-
-            while isAnyThreadRunning(threads):
-                time.sleep(10)
-            print()
-            print()
-            print()
-            print()
-            print('\033[KFinished.')
-
-        # Exit this script.
-        # quit()
+            write(u"\u00B7")
+        mask *= 2
 
 
 
-if __name__ == '__main__':
-    main()
+def countSolids(line):
+    ''' Returns the number of solids in the specified line position. '''
+    binaryLine = '{0:b}'.format(line)
+    count = 0
+    for pos in range (0, len(binaryLine)):
+        if binaryLine[pos] == '1':
+            count += 1
+    return count
+
+
+
+def getLongestShip(line):
+    ''' Returns the size of the longest ship on the line. '''
+    binaryLine = '{0:b}'.format(line)
+    maximumShip = 0
+    current = 0
+    for pos in range (0, len(binaryLine)):
+        if binaryLine[pos] == '1':
+            current += 1
+            if current > maximumShip:
+                maximumShip = current
+        else:
+            current = 0
+    return maximumShip
+
+
+
+def countShipsOnLine(line, ships):
+    ''' Counts the number and size of ships on the line. '''
+    binaryLine = '{0:b}'.format(line)
+    current = 0
+    for pos in range (0, len(binaryLine)):
+        if binaryLine[pos] == '1':
+            current += 1
+        else:
+            if current > 1:
+                ships[current] += 1
+            current = 0
+    if current > 1:
+        ships[current] += 1
+    return True
+
+
+
+
+
+
+
+def isAnyThreadRunning(threads):
+    ''' Returns True if any of the specified threads are running. '''
+    isRunning = False
+    for thread in threads:
+        if thread.poll() is None:
+            isRunning = True
+    return isRunning
+
+def getPossibleLines(numPositions, numSolid, maxShip, mask, negativeMask):
+    ''' Returns the set of possible lines that have the specified number of solid positions. '''
+    # print('getPossibleLines({}, {}, {}, {}, {})'.format(numPositions, numSolid, maxShip, mask, negativeMask))
+    listResult = []
+    maximumLines = (2 ** numPositions) - 1
+    for pos in range(0, maximumLines):
+        if countSolids(pos) == numSolid:
+            if pos & mask == mask:
+                if (~pos) & negativeMask == negativeMask:
+                    if getLongestShip(pos) <= maxShip:
+                        listResult.append(pos)
+    return listResult

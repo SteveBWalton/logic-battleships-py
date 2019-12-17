@@ -7,14 +7,14 @@ Exports the getGame() function.
 '''
 
 # Application libraries.
-import battleships
+from battleships import Battleships
 
 
 
 def getGame(index, args):
     ''' Return a game object for the specified game. '''
     if index == 1:
-        game = battleships.Battleships(10, 4, 'Logic Problems Battleships Number 1', args)
+        game = Battleships(10, 4, 'Logic Problems Battleships Number 1', args)
 
         game.horizontal[0] = 1
         game.horizontal[1] = 1
@@ -47,7 +47,7 @@ def getGame(index, args):
         game.mask[4] = 2 + 64 + 256 + 512
 
     elif index == 2:
-        game = battleships.Battleships(10, 4, 'Logic Problems Battleships Number 2', args)
+        game = Battleships(10, 4, 'Logic Problems Battleships Number 2', args)
 
         game.horizontal[0] = 1
         game.horizontal[1] = 2
@@ -88,7 +88,7 @@ def getGame(index, args):
         game.negativeMask[9] = 2
 
     elif index == 3:
-        game = battleships.Battleships(10, 4, 'Logic Problems Battleships Number 3', args)
+        game = Battleships(10, 4, 'Logic Problems Battleships Number 3', args)
 
         game.horizontal[0] = 4
         game.horizontal[1] = 0
@@ -121,7 +121,7 @@ def getGame(index, args):
         game.negativeMask[9] = 1 + 2 + 256
 
     elif index == 24:
-        game = battleships.Battleships(8, 5, 'Logic Problems Battleships Number 24', args)
+        game = Battleships(8, 5, 'Logic Problems Battleships Number 24', args)
 
         game.horizontal[0] = 4
         game.horizontal[1] = 3
@@ -152,7 +152,7 @@ def getGame(index, args):
         # game.mask[7] = 1+4+16+64+128
 
     elif index == 26:
-        game = battleships.Battleships(8, 5, 'Logic Problems Battleships Number 26', args)
+        game = Battleships(8, 5, 'Logic Problems Battleships Number 26', args)
 
         game.horizontal[0] = 5
         game.horizontal[1] = 2
@@ -184,7 +184,7 @@ def getGame(index, args):
         game.mask[4] = 128
 
     elif index == 27:
-        game = battleships.Battleships(8, 5, 'Logic Problems Battleships Number 27', args)
+        game = Battleships(8, 5, 'Logic Problems Battleships Number 27', args)
 
         game.horizontal[0] = 5
         game.horizontal[1] = 1
@@ -211,7 +211,7 @@ def getGame(index, args):
         game.negativeMask[7] = 64
 
     elif index == 28:
-        game = battleships.Battleships(8, 5, 'Logic Problems Battleships Number 28', args)
+        game = Battleships(8, 5, 'Logic Problems Battleships Number 28', args)
 
         game.horizontal[0] = 5
         game.horizontal[1] = 1
@@ -235,7 +235,7 @@ def getGame(index, args):
         game.negativeMask[7] = 2
 
     elif index == 29:
-        game = battleships.Battleships(8, 5, 'Logic Problems Battleships Number 29', args)
+        game = Battleships(8, 5, 'Logic Problems Battleships Number 29', args)
 
         game.horizontal[0] = 4
         game.horizontal[1] = 4
@@ -259,7 +259,7 @@ def getGame(index, args):
         game.negativeMask[3] = 8 + 32
 
     elif index == 30:
-        game = battleships.Battleships(8, 5, 'Logic Problems Battleships Number 30', args)
+        game = Battleships(8, 5, 'Logic Problems Battleships Number 30', args)
 
         game.horizontal[0] = 5
         game.horizontal[1] = 3
@@ -279,7 +279,7 @@ def getGame(index, args):
         game.vertical[7] = 6
 
     elif index == 31:
-        game = battleships.Battleships(8, 5, 'Logic Problems Battleships Number 31', args)
+        game = Battleships(8, 5, 'Logic Problems Battleships Number 31', args)
 
         game.horizontal[0] = 5
         game.horizontal[1] = 1
@@ -299,7 +299,7 @@ def getGame(index, args):
         game.vertical[7] = 6
 
     elif index == 32:
-        game = battleships.Battleships(8, 5, 'Logic Problems Battleships Number 32', args)
+        game = Battleships(8, 5, 'Logic Problems Battleships Number 32', args)
 
         game.horizontal[0] = 4
         game.horizontal[1] = 2
@@ -319,7 +319,7 @@ def getGame(index, args):
         game.vertical[7] = 5
 
     elif index == 33:
-        game = battleships.Battleships(8, 5, 'Logic Problems Battleships Number 33', args)
+        game = Battleships(8, 5, 'Logic Problems Battleships Number 33', args)
 
         game.horizontal[0] = 5
         game.horizontal[1] = 2
@@ -339,7 +339,7 @@ def getGame(index, args):
         game.vertical[7] = 2
 
     elif index == 34:
-        game = battleships.Battleships(8, 5, 'Logic Problems Battleships Number 34', args)
+        game = Battleships(8, 5, 'Logic Problems Battleships Number 34', args)
 
         game.horizontal[0] = 4
         game.horizontal[1] = 1
@@ -359,7 +359,7 @@ def getGame(index, args):
         game.vertical[7] = 3
 
     elif index == 35:
-        game = battleships.Battleships(9, 5, 'Logic Problems Battleships Number 35', args)
+        game = Battleships(9, 5, 'Logic Problems Battleships Number 35', args)
 
         game.horizontal[0] = 2
         game.horizontal[1] = 1
@@ -392,7 +392,7 @@ def getGame(index, args):
         game.negativeMask[8] = 2
 
     elif index == 36:
-        game = battleships.Battleships(9, 5, 'Logic Problems Battleships Number 36', args)
+        game = Battleships(9, 5, 'Logic Problems Battleships Number 36', args)
         game.horizontal[0] = 4
         game.horizontal[1] = 1
         game.horizontal[2] = 4
@@ -424,7 +424,7 @@ def getGame(index, args):
         game.negativeMask[6] = 2 + 4 + 8
 
     elif index == 37:
-        game = battleships.Battleships(9, 5, 'Logic Problems Battleships Number 37', args)
+        game = Battleships(9, 5, 'Logic Problems Battleships Number 37', args)
         game.horizontal[0] = 3
         game.horizontal[1] = 2
         game.horizontal[2] = 7
@@ -457,7 +457,7 @@ def getGame(index, args):
         game.negativeMask[5] = 2 + 8
 
     elif index == 38:
-        game = battleships.Battleships(9, 5, 'Logic Problems Battleships Number 38', args)
+        game = Battleships(9, 5, 'Logic Problems Battleships Number 38', args)
         game.horizontal[0] = 4
         game.horizontal[1] = 3
         game.horizontal[2] = 4
@@ -485,7 +485,7 @@ def getGame(index, args):
         game.negativeMask[8] = 2 + 8 + 32
 
     elif index == 39:
-        game = battleships.Battleships(9, 5, 'Logic Problems Battleships Number 39', args)
+        game = Battleships(9, 5, 'Logic Problems Battleships Number 39', args)
         game.horizontal[0] = 1
         game.horizontal[1] = 3
         game.horizontal[2] = 1
@@ -519,7 +519,7 @@ def getGame(index, args):
         game.negativeMask[8] =  8 + 32
 
     elif index == 40:
-        game = battleships.Battleships(9, 5, 'Logic Problems Battleships Number 40', args)
+        game = Battleships(9, 5, 'Logic Problems Battleships Number 40', args)
         game.horizontal[0] = 1
         game.horizontal[1] = 5
         game.horizontal[2] = 1
@@ -552,7 +552,7 @@ def getGame(index, args):
         game.negativeMask[8] = 1 + 64
 
     elif index == 41:
-        game = battleships.Battleships(9, 5, 'Logic Problems Battleships Number 41', args)
+        game = Battleships(9, 5, 'Logic Problems Battleships Number 41', args)
         game.horizontal[0] = 3
         game.horizontal[1] = 4
         game.horizontal[2] = 2
@@ -578,7 +578,7 @@ def getGame(index, args):
         game.negativeMask[1] = 2 + 4 + 8
 
     elif index == 42:
-        game = battleships.Battleships(9, 5, 'Logic Problems Battleships Number 42', args)
+        game = Battleships(9, 5, 'Logic Problems Battleships Number 42', args)
         game.horizontal[0] = 3
         game.horizontal[1] = 2
         game.horizontal[2] = 3
@@ -611,7 +611,7 @@ def getGame(index, args):
         game.negativeMask[8] = 1 + 8
 
     elif index == 43:
-        game = battleships.Battleships(9, 5, 'Logic Problems Battleships Number 43', args)
+        game = Battleships(9, 5, 'Logic Problems Battleships Number 43', args)
         game.horizontal[0] = 5
         game.horizontal[1] = 3
         game.horizontal[2] = 2
@@ -638,7 +638,7 @@ def getGame(index, args):
         game.negativeMask[5] = 4 + 8 + 16 + 32
 
     elif index == 44:
-        game = battleships.Battleships(9, 5, 'Logic Problems Battleships Number 44', args)
+        game = Battleships(9, 5, 'Logic Problems Battleships Number 44', args)
         game.horizontal[0] = 5
         game.horizontal[1] = 0
         game.horizontal[2] = 5
@@ -665,7 +665,7 @@ def getGame(index, args):
         game.negativeMask[3] = 4 + 8 + 16 + 32
 
     elif index == 45:
-        game = battleships.Battleships(9, 5, 'Logic Problems Battleships Number 45', args)
+        game = Battleships(9, 5, 'Logic Problems Battleships Number 45', args)
         game.horizontal[0] = 1
         game.horizontal[1] = 4
         game.horizontal[2] = 2
