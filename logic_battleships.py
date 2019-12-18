@@ -30,6 +30,9 @@ def main():
     argParse.add_argument('-t', '--threads', help='Split the program into threads.', action='store')
     argParse.add_argument('-p', '--transpose', help='Switch the problem 90 degrees.', action='store_true')
     argParse.add_argument('-r', '--remain', help='Display estimated time remaining not progress.', action='store_true')
+    argParse.add_argument('-k', '--keep', help='Keep the existing log file.', action='store_true')
+    argParse.add_argument('-l', '--large', help='Guess the positions of the 4 and 5 ships.', action='store_true')
+    argParse.add_argument('-m', '--mask', help='Specify additional information.', metavar='N', type=int, nargs='+')
     argParse.add_argument('-v', '--verbose', help='Increase the output level.', action='store_true')
 
     args = argParse.parse_args()
@@ -39,14 +42,17 @@ def main():
         print(sys.argv)
 
     # Reset the output file.
-    if args.threads == None:
-        oFile = open('results.txt', 'w')
-        oFile.close()
+    if args.keep:
+        pass
     else:
-        numThreads = int(args.threads)
-        if numThreads > 1:
+        if args.threads == None:
             oFile = open('results.txt', 'w')
             oFile.close()
+        else:
+            numThreads = int(args.threads)
+            if numThreads > 1:
+                oFile = open('results.txt', 'w')
+                oFile.close()
 
     # Indentify the game to solve.
     isShowGame = False
@@ -68,6 +74,10 @@ def main():
     # print('Game = {}'.format(gameNumber))
 
     game = getGame(gameNumber, args)
+
+    if args.mask:
+        for i in range(0, len(args.mask)):
+            game.mask[i] |= args.mask[i]
 
     if game.isTranspose:
         game.transpose()
@@ -112,7 +122,11 @@ def main():
             write('{}'.format(game.vertical[row]))
         writeLine('')
 
-        writeLine('Search space is {:,}.  log = {:0.2f}'.format(nNumber, math.log10(nNumber)))
+        if nNumber > 0:
+            logNumber = math.log10(nNumber)
+        else:
+            logNumber = 0
+        writeLine('Search space is {:,}.  log = {:0.2f}'.format(nNumber, logNumber))
 
     if args.threads != None:
         numThreads = int(args.threads)
@@ -124,55 +138,69 @@ def main():
             # Solve the specified game.
             game.solve()
         else:
-            # print('args.threads = {}.'.format(numThreads))
-            import subprocess
-            nSplit = numThreads
-            if nSplit > 20:
-                nSplit = 20
-            elif nSplit < 2:
-                nSplit = 2
-
-            fAmount = float((game.finishSearch - game.startSearch) / nSplit)
-            fStart = game.startSearch
-            indent = 0
-            threads = []
-            for i in range(0, nSplit-1):
-                if args.verbose:
-                    print('Thread({}) --game={} --start={} --finish={} --indent={} --threads={}'.format(i, gameNumber, fStart, fStart + fAmount, indent, 1))
-                command = [__file__, '--game', '{}'.format(gameNumber) , '--start', '{}'.format(fStart), '--finish', '{}'.format(fStart + fAmount), '--indent', '{}'.format(indent), '--threads', '1']
-                if game.isTranspose:
-                    command.append('-p')
-                if args.verbose:
-                    command.append('-v')
-                threads.append(subprocess.Popen(command))
-                fStart += fAmount
-                indent += 7
-            if game.finishSearch >= 100:
-                if args.verbose:
-                    print('Thread({}) --game={} --start={} --indent={} --threads={}'.format(nSplit-1, gameNumber, fStart, indent, 1))
-                command = [__file__, '--game', '{}'.format(gameNumber), '--start', '{}'.format(fStart), '--indent', '{}'.format(indent), '--threads', '1']
-                if game.isTranspose:
-                    command.append('-p')
-                if args.verbose:
-                    command.append('-v')
-                threads.append(subprocess.Popen(command))
+            if args.large:
+                game.guessLargeShips()
             else:
-                if args.verbose:
-                    print('Thread({}) --game={} --start={} --finish={} --indent={} --threads={}'.format(nSplit-1, gameNumber, fStart, game.finishSearch, indent, 1))
-                command = [__file__, '--game', '{}'.format(gameNumber), '--start', '{}'.format(fStart), '--finish', '{}'.format(game.finishSearch), '--indent', '{}'.format(indent), '--threads', '1']
-                if game.isTranspose:
-                    command.append('-p')
-                if args.verbose:
-                    command.append('-v')
-                threads.append(subprocess.Popen(command))
+                # print('args.threads = {}.'.format(numThreads))
+                import subprocess
+                nSplit = numThreads
+                if nSplit > 20:
+                    nSplit = 20
+                elif nSplit < 2:
+                    nSplit = 2
 
-            while isAnyThreadRunning(threads):
-                time.sleep(10)
-            print()
-            print()
-            print()
-            print()
-            print('\033[KFinished.')
+                fAmount = float((game.finishSearch - game.startSearch) / nSplit)
+                fStart = game.startSearch
+                indent = 0
+                threads = []
+                for i in range(0, nSplit-1):
+                    if args.verbose:
+                        print('Thread({}) --game={} --start={} --finish={} --indent={} --threads={}'.format(i, gameNumber, fStart, fStart + fAmount, indent, 1))
+                    command = [__file__, '--game', '{}'.format(gameNumber) , '--start', '{}'.format(fStart), '--finish', '{}'.format(fStart + fAmount), '--indent', '{}'.format(indent), '--threads', '1']
+                    if game.isTranspose:
+                        command.append('-p')
+                    if args.verbose:
+                        command.append('-v')
+                    if args.mask:
+                        command.append('--mask')
+                        for i in range(0, len(args.mask)):
+                            command.append('{}'.format(args.mask[i]))
+                    threads.append(subprocess.Popen(command))
+                    fStart += fAmount
+                    indent += 7
+                if game.finishSearch >= 100:
+                    if args.verbose:
+                        print('Thread({}) --game={} --start={} --indent={} --threads={}'.format(nSplit-1, gameNumber, fStart, indent, 1))
+                    command = [__file__, '--game', '{}'.format(gameNumber), '--start', '{}'.format(fStart), '--indent', '{}'.format(indent), '--threads', '1']
+                    if game.isTranspose:
+                        command.append('-p')
+                    if args.verbose:
+                        command.append('-v')
+                    if args.mask:
+                        command.append('--mask')
+                        for i in range(0, len(args.mask)):
+                            command.append('{}'.format(args.mask[i]))
+                    threads.append(subprocess.Popen(command))
+                else:
+                    if args.verbose:
+                        print('Thread({}) --game={} --start={} --finish={} --indent={} --threads={}'.format(nSplit-1, gameNumber, fStart, game.finishSearch, indent, 1))
+                    command = [__file__, '--game', '{}'.format(gameNumber), '--start', '{}'.format(fStart), '--finish', '{}'.format(game.finishSearch), '--indent', '{}'.format(indent), '--threads', '1']
+                    if game.isTranspose:
+                        command.append('-p')
+                    if args.verbose:
+                        command.append('-v')
+                    threads.append(subprocess.Popen(command))
+
+                while isAnyThreadRunning(threads):
+                    time.sleep(10)
+                print()
+                print()
+                print()
+                print()
+            if args.keep:
+                pass
+            else:
+                print('\033[KFinished.')
 
         # Exit this script.
         # quit()

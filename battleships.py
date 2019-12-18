@@ -12,6 +12,8 @@ import argparse
 import datetime
 import time
 import math
+import copy
+import subprocess
 
 # Application libraries.
 
@@ -22,7 +24,7 @@ class Battleships():
 
 
 
-    def __init__(self, grid, maxShip, label, args):
+    def __init__(self, gameNumber, grid, maxShip, label, args):
         ''''
         Class Constructor.
 
@@ -30,6 +32,7 @@ class Battleships():
         :ivar int maxShip: Specifies the size of the largest battleship.  Expected 4 or 5.
         :ivar string label: Specifies a label for the problem.
         '''
+        self.gameNumber = gameNumber
         self.grid = grid
         self.maxShip = maxShip
         self.horizontal = []
@@ -79,7 +82,7 @@ class Battleships():
 
 
     def getShips(self):
-        ''' Returns the number and size of the ships. '''
+        ''' Returns the number and size of the ships on the grid. '''
         ships = []
         for shipSize in range(0, self.maxShip + 1):
             ships.append(0)
@@ -168,6 +171,62 @@ class Battleships():
 
 
 
+    def isPartialSolution(self, shipSize):
+        ''' Returns true if the current position does not exceed the boundary conditions and could lead to a valid solultion. '''
+        for row in range(0, self.grid):
+            # Check the number of blocks.
+            if countSolids(self.line[row]) > self.horizontal[row]:
+                # print('Too many blocks in row {}. ({}, {})'.format(row+1, countSolids(self.line[row]), self.horizontal[row]))
+                return False
+
+            # Check the length of the battle ships.
+            if getLongestShip(self.line[row]) > self.maxShip:
+                # print('Ship too long in row {}'.format(row+1))
+                return False
+
+            # Check the columns.
+            line = self.verticalLine(row)
+            if countSolids(line) > self.vertical[row]:
+                # print('Too many blocks in column {}'.format(row+1))
+                return False
+
+            # Check the length of the battle ships.
+            if getLongestShip(line) > self.maxShip:
+                # print('Ship too long in column {}'.format(row+1))
+                return False
+
+        # Check the ships are not touching.
+        for x in range(0, self.grid):
+            for y in range(0, self.grid):
+                if self.isShip(x, y):
+                    # Check the diagonals.
+                    if self.isShip(x-1, y-1):
+                        return False
+                    if self.isShip(x+1, y-1):
+                        return False
+                    if self.isShip(x-1, y+1):
+                        return False
+                    if self.isShip(x+1, y+1):
+                        return False
+
+        ships = self.getShips()
+
+        # Check the maximum size for a 4 this will not work.
+        if shipSize == 5:
+            if ships[5] != 1:
+                # print(ships)
+                return False
+        if shipSize == 4:
+            if ships[5] != 1 or ships[4] != 1:
+                # print(ships)
+                return False
+
+        # Looks good!!
+        return True
+
+
+
+
     def isValidSolution(self):
         ''' Returns true if the current position is valid solution to the problem. '''
 
@@ -186,7 +245,7 @@ class Battleships():
         for x in range(0, self.grid):
             for y in range(0, self.grid):
                 if self.isShip(x, y):
-                    # Check the diaoctals.
+                    # Check the diagonals.
                     if self.isShip(x-1, y-1):
                         return False
                     if self.isShip(x+1, y-1):
@@ -263,7 +322,7 @@ class Battleships():
                     # if self.count % 100000 == 0:
                     if self.count % 10000000 == 0:
                         # These write an extra space into the next progress box.
-                        elapsedTime = time.time() - self.start_time
+                        elapsedTime = time.time() - self.startTime
                         completed = (percentage - self.startSearch) / (self.finishSearch - self.startSearch)
                         totalTime = elapsedTime / completed
                         estimatedTime = 30 + (1 - completed) * totalTime
@@ -290,9 +349,9 @@ class Battleships():
 
 
 
-    def solve(self):
-        ''' Solve the game of battleships '''
-        self.start_time = time.time()
+    def initialiseGame(self):
+        ''' Calculate the totalShips etc. '''
+        self.startTime = time.time()
         self.count = 0
         self.number = 1
         self.posibilities = []
@@ -341,20 +400,26 @@ class Battleships():
 
         if totalShipsHorizontal == totalShipsVertical:
             self.totalShips = totalShipsHorizontal
-            if self.number > 0:
-                if self.isSolveGame:
-                    self.search(0)
-                    # These write an extra space into the next progress box.
-                    if self.indent > 0:
-                        print('\033[{}C ------ '.format(self.indent), end='\r', flush=True)
-                    else:
-                        print(' ------ ', end='\r', flush=True)
-
-            # print('Search Space  {:,}'.format(self.number))
-            # print('Actual Search {:,}'.format(self.count))
+            return True
         else:
             print('Total ships horizontal != ships vertical. {} != {}'.format(totalShipsHorizontal, totalShipsVertical))
-        # print('Finished')
+        return False
+
+
+
+    def solve(self):
+        ''' Solve the game of battleships '''
+        if not self.initialiseGame():
+            return
+
+        if self.number > 0:
+            if self.isSolveGame:
+                self.search(0)
+                # These write an extra space into the next progress box.
+                if self.indent > 0:
+                    print('\033[{}C ------ '.format(self.indent), end='\r', flush=True)
+                else:
+                    print(' ------ ', end='\r', flush=True)
 
 
 
@@ -370,6 +435,9 @@ class Battleships():
             self.isSolveGame = False
         if args.transpose:
             self.isTranspose = True
+        self.numThreads = 1
+        if args.threads != None:
+            self.numThreads = int(args.threads)
 
 
 
@@ -412,6 +480,86 @@ class Battleships():
 
         for x in range(0, self.grid):
             self.negativeMask[x] = transposedMask[x]
+
+
+
+    def applyMask(self):
+        ''' Set the position to the position defined by the mask. '''
+        for x in range(0, self.grid):
+            self.line[x] = self.mask[x]
+
+
+
+
+    def guessLargeShips(self):
+        ''' Loop through all the possible positions for the large ships. '''
+        # print('Loop through all the possible positions for the large ships. ')
+
+        if not self.initialiseGame():
+            return
+
+        # Build the initial positions.
+        self.applyMask()
+        ships = self.getShips()
+
+        shipSize = 0
+        if self.maxShip >= 4:
+            # print('There should be 1 size 4 ship.')
+            # print('There are {} size 4 ships.'.format(ships[4]))
+            if ships[4] < 1:
+                shipSize = 4
+        if self.maxShip >= 5:
+            #print('There should be 1 size 5 ship.')
+            #print('There are {} size 5 ships.'.format(ships[5]))
+            if ships[5] < 1:
+                shipSize = 5
+
+        if shipSize > 0:
+            # Try to fit a ship of size shipSize onto the grid.
+            # Add the ship horizontally.
+            for x in range(0, self.grid - shipSize + 1):
+                for y in range(0, self.grid):
+                    self.applyMask()
+                    for ship in range(x, x+shipSize):
+                        self.line[y] |= 2 ** ship
+                    if self.isPartialSolution(shipSize):
+                        if shipSize == 5:
+                            newGame = copy.deepcopy(self)
+                            for i in range(0, self.grid):
+                                newGame.mask[i] = newGame.line[i]
+                            newGame.guessLargeShips()
+                        else:
+                            # self.write()
+                            self.launch()
+
+            # Add the ship vertically.
+            for x in range(0, self.grid):
+                for y in range(0, self.grid - shipSize + 1):
+                    self.applyMask()
+                    for ship in range(y, y+shipSize):
+                        self.line[ship] |= 2 ** x
+                    if self.isPartialSolution(shipSize):
+                        if shipSize == 5:
+                            newGame = copy.deepcopy(self)
+                            for i in range(0, self.grid):
+                                newGame.mask[i] = newGame.line[i]
+                            newGame.guessLargeShips()
+                        else:
+                            # self.write()
+                            self.launch()
+
+    def launch(self):
+        ''' Launch a command line to solve the specified position. '''
+        start = 0
+        amount = 100.0 / self.numThreads
+        indent = 0
+        command = ['./logic_battleships.py', '--game', '{}'.format(self.gameNumber) , '--keep', '--threads', '{}'.format(self.numThreads), '--mask']
+        for x in range(0, len(self.line)):
+            command.append('{}'.format(self.line[x]))
+        print(command)
+        subprocess.call(command)
+
+
 
 
 def write(sText : str):
@@ -500,6 +648,8 @@ def isAnyThreadRunning(threads):
         if thread.poll() is None:
             isRunning = True
     return isRunning
+
+
 
 def getPossibleLines(numPositions, numSolid, maxShip, mask, negativeMask):
     ''' Returns the set of possible lines that have the specified number of solid positions. '''
