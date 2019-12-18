@@ -70,7 +70,7 @@ def main():
     game = getGame(gameNumber, args)
 
     if game.isTranspose:
-        game.Transpose()
+        game.transpose()
 
     if args.threads == None:
         isShowGame = True

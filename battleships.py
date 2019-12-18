@@ -51,7 +51,7 @@ class Battleships():
             self.mask.append(0)
             self.negativeMask.append(0)
         if args != None:
-            self.ApplyParameters(args)
+            self.applyParameters(args)
 
 
 
@@ -213,7 +213,7 @@ class Battleships():
 
 
 
-    def CheckTouching(self):
+    def checkTouching(self):
         ''' Report the touching status of the solution. '''
         for x in range(0, self.grid):
             for y in range(0, self.grid):
@@ -358,7 +358,7 @@ class Battleships():
 
 
 
-    def ApplyParameters(self, args):
+    def applyParameters(self, args):
         ''' Apply the parameters to the game object. '''
         if args.start != None:
             self.startSearch = float(args.start)
@@ -373,7 +373,7 @@ class Battleships():
 
 
 
-    def Transpose(self):
+    def transpose(self):
         ''' Switch the game on it's side. '''
         for x in range(0, self.grid):
             temporary = self.horizontal[x]
