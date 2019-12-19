@@ -139,7 +139,8 @@ def main():
             game.solve()
         else:
             if args.large:
-                game.guessLargeShips()
+                numPositions = game.guessLargeShips(False, 0, 0)
+                game.guessLargeShips(True, 0, numPositions)
             else:
                 # print('args.threads = {}.'.format(numThreads))
                 import subprocess

@@ -491,7 +491,7 @@ class Battleships():
 
 
 
-    def guessLargeShips(self):
+    def guessLargeShips(self, isSolve = False, numPositions = 0, totalPositions = 0):
         ''' Loop through all the possible positions for the large ships. '''
         # print('Loop through all the possible positions for the large ships. ')
 
@@ -527,10 +527,12 @@ class Battleships():
                             newGame = copy.deepcopy(self)
                             for i in range(0, self.grid):
                                 newGame.mask[i] = newGame.line[i]
-                            newGame.guessLargeShips()
+                            numPositions = newGame.guessLargeShips(isSolve, numPositions, totalPositions)
                         else:
-                            # self.write()
-                            self.launch()
+                            numPositions += 1
+                            if isSolve:
+                                # self.write()
+                                self.launch(numPositions, totalPositions)
 
             # Add the ship vertically.
             for x in range(0, self.grid):
@@ -543,20 +545,27 @@ class Battleships():
                             newGame = copy.deepcopy(self)
                             for i in range(0, self.grid):
                                 newGame.mask[i] = newGame.line[i]
-                            newGame.guessLargeShips()
+                            numPositions = newGame.guessLargeShips(isSolve, numPositions, totalPositions)
                         else:
-                            # self.write()
-                            self.launch()
+                            numPositions += 1
+                            if isSolve:
+                                # self.write()
+                                self.launch(numPositions, totalPositions)
+        return numPositions
 
-    def launch(self):
+
+
+    def launch(self, numPositions = 0, totalPositions = 0):
         ''' Launch a command line to solve the specified position. '''
+        if totalPositions > 0:
+            writeLine('Long Ships position {} of {}.'.format(numPositions, totalPositions))
         start = 0
         amount = 100.0 / self.numThreads
         indent = 0
         command = ['./logic_battleships.py', '--game', '{}'.format(self.gameNumber) , '--keep', '--threads', '{}'.format(self.numThreads), '--mask']
         for x in range(0, len(self.line)):
             command.append('{}'.format(self.line[x]))
-        print(command)
+        # print(command)
         subprocess.call(command)
 
 
