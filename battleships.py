@@ -558,7 +558,9 @@ class Battleships():
     def launch(self, numPositions = 0, totalPositions = 0):
         ''' Launch a command line to solve the specified position. '''
         if totalPositions > 0:
-            writeLine('Long Ships position {} of {}.'.format(numPositions, totalPositions))
+            writeLine('Long ships position {} of {}.'.format(numPositions, totalPositions))
+        if self.startSearch > numPositions:
+            return
         start = 0
         amount = 100.0 / self.numThreads
         indent = 0
