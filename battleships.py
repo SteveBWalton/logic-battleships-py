@@ -429,6 +429,10 @@ class Battleships():
             self.startSearch = float(args.start)
         if args.finish != None:
             self.finishSearch = float(args.finish)
+        else:
+            if args.large:
+                # Search through all the large ship guesses.
+                self.finishSearch = 999999
         if args.indent != None:
             self.indent = int(args.indent)
         if args.threads != None:
@@ -557,10 +561,12 @@ class Battleships():
 
     def launch(self, numPositions = 0, totalPositions = 0):
         ''' Launch a command line to solve the specified position. '''
-        if totalPositions > 0:
-            writeLine('Long ships position {} of {}.'.format(numPositions, totalPositions))
         if self.startSearch > numPositions:
             return
+        if numPositions > self.finishSearch:
+            return
+        if totalPositions > 0:
+            writeLine('Long ships position {} of {}.'.format(numPositions, totalPositions))
         start = 0
         amount = 100.0 / self.numThreads
         indent = 0

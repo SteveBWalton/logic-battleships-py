@@ -46,13 +46,13 @@ def main():
         pass
     else:
         if args.threads == None:
-            oFile = open('results.txt', 'w')
-            oFile.close()
+            outputFile = open('results.txt', 'w')
+            outputFile.close()
         else:
             numThreads = int(args.threads)
             if numThreads > 1:
-                oFile = open('results.txt', 'w')
-                oFile.close()
+                outputFile = open('results.txt', 'w')
+                outputFile.close()
 
     # Indentify the game to solve.
     isShowGame = False
