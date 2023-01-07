@@ -1,5 +1,5 @@
 # logic_battleships
-Program to solve the Battleships problems in Logic Games
+Python program to solve the Battleships problems in Logic Games
 
 To solve a game configuration.
 
